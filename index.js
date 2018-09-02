@@ -993,7 +993,7 @@ bot.on("message", (message) => {
 
       let command = msg.content.toLowerCase().split(" ")[0];
 
-      if (command === `${prefix}play`) {
+      if (command === `${prefix}lay`) {
         const voiceChannel = msg.member.voiceChannel;
 
         if (!voiceChannel) {
@@ -1082,7 +1082,6 @@ bot.on("message", (message) => {
                 .setFooter("Бот версии " + version)
               msg.channel.sendEmbed(embed1).then(message => { message.delete(20000) })
 
-              /////////////////
               try {
 
                 var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
@@ -1123,7 +1122,7 @@ bot.on("message", (message) => {
 
         }
 
-      } else if (command === `${prefix}skip`) {
+      } else if (command === `${prefix}kip`) {
         let skipNotInVoiceEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription('**Вы** должны быть в голосовом канале для использования данной команды')
@@ -1155,7 +1154,7 @@ bot.on("message", (message) => {
         msg.channel.send(skipSkipping);
         return undefined;
 
-      } else if (command === `${prefix}stop`) {
+      } else if (command === `${prefix}top`) {
 
         if (!msg.member.voiceChannel) {
           let stopNotInVoiceEmbed = new Discord.RichEmbed()
@@ -1189,7 +1188,7 @@ bot.on("message", (message) => {
         msg.channel.send(stopStoppingAndLeavingVoiceEmbed);
         return undefined;
 
-      } else if (command === `${prefix}vol`) {
+      } else if (command === `${prefix}ol`) {
 
         if (!msg.member.voiceChannel) {
           let volMustBeInVoiceEmbed = new Discord.RichEmbed()
@@ -1233,7 +1232,7 @@ bot.on("message", (message) => {
         msg.delete().catch(O_o => { });
         return msg.channel.send(volVolumeArgsEmbed);
 
-      } else if (command === `${prefix}music`) {
+      } else if (command === `${prefix}usic`) {
 
         if (!serverQueue) {
           let musicNoQueueEmbed = new Discord.RichEmbed()
@@ -1252,7 +1251,7 @@ bot.on("message", (message) => {
           .setFooter("Бот версии " + version)
         return msg.channel.sendEmbed(embedNP);
 
-      } else if (command === `${prefix}queue`) {
+      } else if (command === `${prefix}ueue`) {
 
         if (!serverQueue) {
           let qNoQueueEmbed = new Discord.RichEmbed()
