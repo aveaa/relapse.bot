@@ -10,9 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.4.2",
+    "get-youtube-id": "^1.0.0",
+    "gif-search": "^2.0.1",
     "ms": "^2.1.1",
     "opusscript": "0.0.6",
+    "simple-youtube-api": "^5.0.2",
+    "youtube-info": "^1.2.0",
     "ytdl-core": "^0.24.0"
   },
   "devDependencies": {}
 }
+
