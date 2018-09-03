@@ -1535,6 +1535,5 @@ bot.on("message", (message) => {
 
       message.delete().catch(O_o => { });
       return message.channel.send(serverembed);
-    }
   }
 });
