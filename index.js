@@ -18,8 +18,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
-//bot.login(botconfig.token);
+//bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -966,6 +966,7 @@ bot.on("message", (message) => {
 
   //if (message.channel.id == '479246318959853569' || message.channel.id == '485410945011810316' || message.channel.id == '478888400628482048' || message.channel.id == '484741380221042718') {
   if (message.channel.id != '479268624264200204') {
+    if(cmd === prefix + "help") {
     let bIcon = bot.user.displayAvatarURL;
     let helpEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
@@ -1540,4 +1541,5 @@ bot.on("message", (message) => {
     message.delete().catch(O_o => { });
     return message.channel.send(serverembed);
   }
+}
 });
