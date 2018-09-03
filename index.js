@@ -18,7 +18,7 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -564,6 +564,7 @@ bot.on("message", (message) => {
       functionMuteOne();
     }
 
+    let parameters = args.join(' ').slice(22);
     let muteTime = args[1];
     if (!message.member.roles.find("name", "R.B mute")) {
       let muteNoPerms = new Discord.RichEmbed()
@@ -586,8 +587,8 @@ bot.on("message", (message) => {
       return message.channel.send(toMuteSpellingEmbed);
     }
 
-    let muteReason = args.join(' ').slice(22);
-    if (!muteReason) {
+    let muteReason = parameters.slice(muteTime.length);
+      if (!muteReason) {
       let muteNoReasonEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription("<@" + sender.id + ">, вы не указали причину")
@@ -605,7 +606,8 @@ bot.on("message", (message) => {
       .setColor(embedColor)
       .addField('Нарушитель ', toMute, true)
       .addField('Заткнул ', "<@" + message.author.id + ">", true)
-      .addField('Длительность, причина ', `${muteReason}`)
+      .addField('Длительность ', `${muteTime}`, true)
+      .addField('Причина ', `${muteReason}`, true)
       .setFooter("Бот версии " + version)
     message.delete().catch(O_o => { });
 
@@ -1082,6 +1084,7 @@ bot.on("message", (message) => {
                 .setFooter("Бот версии " + version)
               msg.channel.sendEmbed(embed1).then(message => { message.delete(20000) })
 
+              /////////////////
               try {
 
                 var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
