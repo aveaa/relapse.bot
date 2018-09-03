@@ -19,6 +19,7 @@ var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
 bot.login(process.env.BOT_TOKEN);
+//bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -28,7 +29,7 @@ function clean(text) {
 }
 
 bot.on("guildMemberAdd", async (user) => {
-  
+
   const reason = "Бот";
   if (user.user.username.toLowerCase().includes("kaboom") || user.user.username.toLowerCase().includes("telebotian") || user.user.username.toLowerCase().includes("jsopbots")) {
     if (user.bannable) {
@@ -170,6 +171,7 @@ bot.on("message", (message) => {
         let userCreated = sender.createdAt.toString().split(' ');
         let finalString = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setThumbnail(sender.displayAvatarURL)
           .setDescription("Информация о <@" + sender.id + ">")
           .setColor(embedColor)
           .addField("Ник: ", sender.username, true)
@@ -184,6 +186,7 @@ bot.on("message", (message) => {
         let userCreated = sender.createdAt.toString().split(' ');
         let finalString = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setThumbnail(sender.displayAvatarURL)
           .setDescription("Информация о <@" + sender.id + ">")
           .setColor(embedColor)
           .addField("Ник: ", sender.username, true)
@@ -199,6 +202,7 @@ bot.on("message", (message) => {
       }
       let finalString = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(iUser.displayAvatarURL)
         .setDescription("Информация о <@" + iUser.id + ">")
         .setColor(embedColor)
         .addField("Ник: ", `<@${iUser.id}>`, true)
@@ -588,7 +592,7 @@ bot.on("message", (message) => {
     }
 
     let muteReason = muteParameters.slice(muteTime.length);
-      if (!muteReason) {
+    if (!muteReason) {
       let muteNoReasonEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription("<@" + sender.id + ">, вы не указали причину")
@@ -961,579 +965,579 @@ bot.on("message", (message) => {
   }
 
   //if (message.channel.id == '479246318959853569' || message.channel.id == '485410945011810316' || message.channel.id == '478888400628482048' || message.channel.id == '484741380221042718') {
-    if (message.channel.id != '479268624264200204') {
-      let bIcon = bot.user.displayAvatarURL;
-      let helpEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Список команд бота: ")
-        .setColor(embedColor)
-        .setThumbnail(bIcon)
-        .addField(`${prefix}info [ник]`, `Получить информацию о **пользователе**`)
-        .addField(`${prefix}botInfo`, `Получить информацию о **боте**`)
-        .addField(`${prefix}serverInfo `, `Получить информацию о **сервере**`)
-        .addField(`${prefix}ahelp `, `Получить список команд для **админов**`)
-        .addField(`${prefix}report [ник] [причина] `, `Кинуть жалобу на **пользователя**`)
-        .addField(`${prefix}play [ссылка] `, `Добавить трек в **очередь**`)
-        .addField(`${prefix}skip`, `Пропустить трек`)
-        .addField(`${prefix}pause`, `Приостановить трек`)
-        .addField(`${prefix}resume`, `Воспроизвести трек`)
-        .addField(`${prefix}queue`, `Получить очередь`)
-        .addField(`${prefix}music`, `Получить играющий трек`)
-        .setFooter("Бот версии " + version)
+  if (message.channel.id != '479268624264200204') {
+    let bIcon = bot.user.displayAvatarURL;
+    let helpEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription("Список команд бота: ")
+      .setColor(embedColor)
+      .setThumbnail(bIcon)
+      .addField(`${prefix}info [ник]`, `Получить информацию о **пользователе**`)
+      .addField(`${prefix}botInfo`, `Получить информацию о **боте**`)
+      .addField(`${prefix}serverInfo `, `Получить информацию о **сервере**`)
+      .addField(`${prefix}ahelp `, `Получить список команд для **админов**`)
+      .addField(`${prefix}report [ник] [причина] `, `Кинуть жалобу на **пользователя**`)
+      .addField(`${prefix}play [ссылка] `, `Добавить трек в **очередь**`)
+      .addField(`${prefix}skip`, `Пропустить трек`)
+      .addField(`${prefix}pause`, `Приостановить трек`)
+      .addField(`${prefix}resume`, `Воспроизвести трек`)
+      .addField(`${prefix}queue`, `Получить очередь`)
+      .addField(`${prefix}music`, `Получить играющий трек`)
+      .setFooter("Бот версии " + version)
 
-      message.delete().catch(O_o => { });
-      return message.channel.send(helpEmbed);
-    }
+    message.delete().catch(O_o => { });
+    return message.channel.send(helpEmbed);
+  }
 
-    bot.on('message', async msg => {
-      if (msg.author.bot) return undefined;
-      if (!msg.content.startsWith(prefix)) return undefined;
+  bot.on('message', async msg => {
+    if (msg.author.bot) return undefined;
+    if (!msg.content.startsWith(prefix)) return undefined;
 
-      const args = msg.content.split(' ');
-      const searchString = args.slice(1).join(' ');
+    const args = msg.content.split(' ');
+    const searchString = args.slice(1).join(' ');
 
-      const url = args[1] ? args[1].replace(/<(.+)>/g, '$1') : '';
-      const serverQueue = queue.get(msg.guild.id);
+    const url = args[1] ? args[1].replace(/<(.+)>/g, '$1') : '';
+    const serverQueue = queue.get(msg.guild.id);
 
-      let command = msg.content.toLowerCase().split(" ")[0];
+    let command = msg.content.toLowerCase().split(" ")[0];
 
-      if (command === `${prefix}lay`) {
-        const voiceChannel = msg.member.voiceChannel;
+    if (command === `${prefix}lay`) {
+      const voiceChannel = msg.member.voiceChannel;
 
-        if (!voiceChannel) {
-          let plMustBeInVoiceEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription("**Вы** должны находится в голосовом канале")
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+      if (!voiceChannel) {
+        let plMustBeInVoiceEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription("**Вы** должны находится в голосовом канале")
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
 
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(plMustBeInVoiceEmbed);
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(plMustBeInVoiceEmbed);
+      }
+
+      const permissions = voiceChannel.permissionsFor(msg.client.user);
+
+      if (!permissions.has('CONNECT')) {
+        let plNoPermsConnectEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription("У **меня** нет доступа для присоединения к данному голосовому каналу")
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
+
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(plNoPermsConnectEmbed);
+      }
+
+      if (!permissions.has('SPEAK')) {
+        let plNoPermsSpeakEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription("У **меня** нет доступа для воспроизведения музыки в данном голосовом канале")
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
+
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(plNoPermsSpeakEmbed);
+      }
+
+      if (!permissions.has('EMBED_LINKS')) {
+        let plNoPermsEmbedLinksEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription("У **меня** недостаточно прав: EMBED_LINKS")
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
+
+        msg.delete().catch(O_o => { });
+        return msg.channel.sendMessage(plNoPermsEmbedLinksEmbed);
+      }
+
+      if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
+
+        const playlist = await youtube.getPlaylist(url);
+        const videos = await playlist.getVideos();
+
+
+        for (const video of Object.values(videos)) {
+
+          const video2 = await youtube.getVideoByID(video.id);
+          await handleVideo(video2, msg, voiceChannel, true);
         }
+        let plAddingToQueueEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription(`${playlist.title} добавлен в очередь`)
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
 
-        const permissions = voiceChannel.permissionsFor(msg.client.user);
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(plAddingToQueueEmbed);
+      } else {
 
-        if (!permissions.has('CONNECT')) {
-          let plNoPermsConnectEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription("У **меня** нет доступа для присоединения к данному голосовому каналу")
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+        try {
 
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(plNoPermsConnectEmbed);
-        }
+          var video = await youtube.getVideo(url);
 
-        if (!permissions.has('SPEAK')) {
-          let plNoPermsSpeakEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription("У **меня** нет доступа для воспроизведения музыки в данном голосовом канале")
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(plNoPermsSpeakEmbed);
-        }
-
-        if (!permissions.has('EMBED_LINKS')) {
-          let plNoPermsEmbedLinksEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription("У **меня** недостаточно прав: EMBED_LINKS")
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.sendMessage(plNoPermsEmbedLinksEmbed);
-        }
-
-        if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
-
-          const playlist = await youtube.getPlaylist(url);
-          const videos = await playlist.getVideos();
-
-
-          for (const video of Object.values(videos)) {
-
-            const video2 = await youtube.getVideoByID(video.id);
-            await handleVideo(video2, msg, voiceChannel, true);
-          }
-          let plAddingToQueueEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription(`${playlist.title} добавлен в очередь`)
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(plAddingToQueueEmbed);
-        } else {
-
+        } catch (error) {
           try {
 
-            var video = await youtube.getVideo(url);
-
-          } catch (error) {
-            try {
-
-              var videos = await youtube.searchVideos(searchString, 5);
-              let index = 0;
-              const embed1 = new Discord.RichEmbed()
-                .setAuthor(name = bot.user.username, icon_url = bIcon)
-                .setTitle(":mag_right: Результаты поиска:")
-                .setDescription(`
+            var videos = await youtube.searchVideos(searchString, 5);
+            let index = 0;
+            const embed1 = new Discord.RichEmbed()
+              .setAuthor(name = bot.user.username, icon_url = bIcon)
+              .setTitle(":mag_right: Результаты поиска:")
+              .setDescription(`
                     ${videos.map(video2 => `${++index}. **${video2.title}**`).join('\n')}`)
 
-                .setColor(embedColor)
-                .setFooter("Бот версии " + version)
-              msg.channel.sendEmbed(embed1).then(message => { message.delete(20000) })
+              .setColor(embedColor)
+              .setFooter("Бот версии " + version)
+            msg.channel.sendEmbed(embed1).then(message => { message.delete(20000) })
 
-              /////////////////
-              try {
+            /////////////////
+            try {
 
-                var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
-                  maxMatches: 1,
-                  time: 15000,
-                  errors: ['time']
-                });
-              } catch (err) {
-                console.error(err);
-                let plNoOneNumEmbed = new Discord.RichEmbed()
-                  .setAuthor(name = bot.user.username, icon_url = bIcon)
-                  .setDescription('Никто не отменял число')
-                  .setColor(embedColor)
-                  .setFooter("Бот версии " + version)
-
-                msg.delete().catch(O_o => { });
-                return msg.channel.send(plNoOneNumEmbed);
-              }
-
-              const videoIndex = parseInt(response.first().content);
-              var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
-
+              var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
+                maxMatches: 1,
+                time: 15000,
+                errors: ['time']
+              });
             } catch (err) {
-
               console.error(err);
-              let plNoSearchResultsEmbed = new Discord.RichEmbed()
+              let plNoOneNumEmbed = new Discord.RichEmbed()
                 .setAuthor(name = bot.user.username, icon_url = bIcon)
-                .setDescription('**Ваш** запрос не дал результатов')
+                .setDescription('Никто не отменял число')
                 .setColor(embedColor)
                 .setFooter("Бот версии " + version)
 
               msg.delete().catch(O_o => { });
-              return msg.channel.send(plNoSearchResultsEmbed);
+              return msg.channel.send(plNoOneNumEmbed);
             }
+
+            const videoIndex = parseInt(response.first().content);
+            var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
+
+          } catch (err) {
+
+            console.error(err);
+            let plNoSearchResultsEmbed = new Discord.RichEmbed()
+              .setAuthor(name = bot.user.username, icon_url = bIcon)
+              .setDescription('**Ваш** запрос не дал результатов')
+              .setColor(embedColor)
+              .setFooter("Бот версии " + version)
+
+            msg.delete().catch(O_o => { });
+            return msg.channel.send(plNoSearchResultsEmbed);
           }
-
-          return handleVideo(video, msg, voiceChannel);
-
         }
 
-      } else if (command === `${prefix}kip`) {
-        let skipNotInVoiceEmbed = new Discord.RichEmbed()
+        return handleVideo(video, msg, voiceChannel);
+
+      }
+
+    } else if (command === `${prefix}kip`) {
+      let skipNotInVoiceEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription('**Вы** должны быть в голосовом канале для использования данной команды')
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+
+      if (!msg.member.voiceChannel) {
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(skipNotInVoiceEmbed);
+      }
+      if (!serverQueue) {
+        let skipNoQueueCantSkipEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription('Очередь **пуста**.')
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
+
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(skipNoQueueCantSkipEmbed);
+      }
+
+      let skipSkipping = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription('Пропуск')
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+
+      serverQueue.connection.dispatcher.end(skipSkipping);
+      msg.channel.send(skipSkipping);
+      return undefined;
+
+    } else if (command === `${prefix}top`) {
+
+      if (!msg.member.voiceChannel) {
+        let stopNotInVoiceEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription('**Вы** должны находится в голосовом канале')
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
+
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(stopNotInVoiceEmbed);
+      }
+      if (!serverQueue) {
+        let stopNoQueueEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription('Очередь **пуста**')
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
+
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(stopNoQueueEmbed);
+      }
+
+      let stopStoppingAndLeavingVoiceEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription('Отключаюсь')
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+
+      serverQueue.songs = [];
+      serverQueue.connection.dispatcher.end(stopStoppingAndLeavingVoiceEmbed);
+      msg.channel.send(stopStoppingAndLeavingVoiceEmbed);
+      return undefined;
+
+    } else if (command === `${prefix}ol`) {
+
+      if (!msg.member.voiceChannel) {
+        let volMustBeInVoiceEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription('**Вы** должны быть в голосовом канале для использования данной команды')
           .setColor(embedColor)
           .setFooter("Бот версии " + version)
 
-        if (!msg.member.voiceChannel) {
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(skipNotInVoiceEmbed);
-        }
-        if (!serverQueue) {
-          let skipNoQueueCantSkipEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription('Очередь **пуста**.')
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(skipNoQueueCantSkipEmbed);
-        }
-
-        let skipSkipping = new Discord.RichEmbed()
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(volMustBeInVoiceEmbed);
+      }
+      if (!serverQueue) {
+        let volQueueIsClearEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription('Пропуск')
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version)
-
-        serverQueue.connection.dispatcher.end(skipSkipping);
-        msg.channel.send(skipSkipping);
-        return undefined;
-
-      } else if (command === `${prefix}top`) {
-
-        if (!msg.member.voiceChannel) {
-          let stopNotInVoiceEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription('**Вы** должны находится в голосовом канале')
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(stopNotInVoiceEmbed);
-        }
-        if (!serverQueue) {
-          let stopNoQueueEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription('Очередь **пуста**')
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(stopNoQueueEmbed);
-        }
-
-        let stopStoppingAndLeavingVoiceEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription('Отключаюсь')
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version)
-
-        serverQueue.songs = [];
-        serverQueue.connection.dispatcher.end(stopStoppingAndLeavingVoiceEmbed);
-        msg.channel.send(stopStoppingAndLeavingVoiceEmbed);
-        return undefined;
-
-      } else if (command === `${prefix}ol`) {
-
-        if (!msg.member.voiceChannel) {
-          let volMustBeInVoiceEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription('**Вы** должны быть в голосовом канале для использования данной команды')
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(volMustBeInVoiceEmbed);
-        }
-        if (!serverQueue) {
-          let volQueueIsClearEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription('Очередь **пуста**')
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(volQueueIsClearEmbed);
-        }
-        if (!args[1]) {
-          let volVolumeIsEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription(`Громкость: **${serverQueue.volume}**`)
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(volVolumeIsEmbed);
-        }
-
-        serverQueue.volume = args[1];
-        serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 50);
-        let volVolumeArgsEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`Громкость: **${args[1]}**`)
+          .setDescription('Очередь **пуста**')
           .setColor(embedColor)
           .setFooter("Бот версии " + version)
 
         msg.delete().catch(O_o => { });
-        return msg.channel.send(volVolumeArgsEmbed);
-
-      } else if (command === `${prefix}usic`) {
-
-        if (!serverQueue) {
-          let musicNoQueueEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription('Очередь **пуста**')
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
-
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(musicNoQueueEmbed);
-        }
-        const embedNP = new Discord.RichEmbed()
+        return msg.channel.send(volQueueIsClearEmbed);
+      }
+      if (!args[1]) {
+        let volVolumeIsEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`Сейчас играет: **${serverQueue.songs[0].title}**`)
+          .setDescription(`Громкость: **${serverQueue.volume}**`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version)
-        return msg.channel.sendEmbed(embedNP);
 
-      } else if (command === `${prefix}ueue`) {
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(volVolumeIsEmbed);
+      }
 
-        if (!serverQueue) {
-          let qNoQueueEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription(`Очередь **пуста**`)
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+      serverQueue.volume = args[1];
+      serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 50);
+      let volVolumeArgsEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription(`Громкость: **${args[1]}**`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
 
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(qNoQueueEmbed);
-        }
-        let index = 0;
-        //	//	//
-        const embedqu = new Discord.RichEmbed()
+      msg.delete().catch(O_o => { });
+      return msg.channel.send(volVolumeArgsEmbed);
+
+    } else if (command === `${prefix}usic`) {
+
+      if (!serverQueue) {
+        let musicNoQueueEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setTitle("Треки в очереди:")
-          .setDescription(`
-        ${serverQueue.songs.map(song => `${++index}. **${song.title}**`).join('\n')}
-**Сейчас играет:** **${serverQueue.songs[0].title}**`)
+          .setDescription('Очередь **пуста**')
           .setColor(embedColor)
           .setFooter("Бот версии " + version)
-        return msg.channel.sendEmbed(embedqu);
-      } else if (command === `${prefix}pause`) {
-        if (serverQueue && serverQueue.playing) {
-          serverQueue.playing = false;
-          serverQueue.connection.dispatcher.pause();
 
-          let pausePausingEmbed = new Discord.RichEmbed()
-            .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription(`Пауза`)
-            .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(musicNoQueueEmbed);
+      }
+      const embedNP = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription(`Сейчас играет: **${serverQueue.songs[0].title}**`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+      return msg.channel.sendEmbed(embedNP);
 
-          msg.delete().catch(O_o => { });
-          return msg.channel.send(pausePausingEmbed);
-        }
+    } else if (command === `${prefix}ueue`) {
 
-        let pauseNoQueueEmbed = new Discord.RichEmbed()
+      if (!serverQueue) {
+        let qNoQueueEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`Очередь **пуста**`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version)
 
         msg.delete().catch(O_o => { });
-        return msg.channel.send(pauseNoQueueEmbed);
-      } else if (command === `${prefix}resume`) {
+        return msg.channel.send(qNoQueueEmbed);
+      }
+      let index = 0;
+      //	//	//
+      const embedqu = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setTitle("Треки в очереди:")
+        .setDescription(`
+        ${serverQueue.songs.map(song => `${++index}. **${song.title}**`).join('\n')}
+**Сейчас играет:** **${serverQueue.songs[0].title}**`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+      return msg.channel.sendEmbed(embedqu);
+    } else if (command === `${prefix}pause`) {
+      if (serverQueue && serverQueue.playing) {
+        serverQueue.playing = false;
+        serverQueue.connection.dispatcher.pause();
 
-        if (serverQueue && !serverQueue.playing) {
-          serverQueue.playing = true;
-          serverQueue.connection.dispatcher.resume();
-          return msg.channel.send('Продолжаю гонять хомячков..');
+        let pausePausingEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setDescription(`Пауза`)
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version)
 
-        }
-        return msg.channel.send('Очередь пуста, продолжать нечего!');
+        msg.delete().catch(O_o => { });
+        return msg.channel.send(pausePausingEmbed);
       }
 
-      return undefined;
-    });
+      let pauseNoQueueEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription(`Очередь **пуста**`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
 
-    async function handleVideo(video, msg, voiceChannel, playlist = false) {
-      const serverQueue = queue.get(msg.guild.id);
-      console.log(video);
+      msg.delete().catch(O_o => { });
+      return msg.channel.send(pauseNoQueueEmbed);
+    } else if (command === `${prefix}resume`) {
+
+      if (serverQueue && !serverQueue.playing) {
+        serverQueue.playing = true;
+        serverQueue.connection.dispatcher.resume();
+        return msg.channel.send('Продолжаю гонять хомячков..');
+
+      }
+      return msg.channel.send('Очередь пуста, продолжать нечего!');
+    }
+
+    return undefined;
+  });
+
+  async function handleVideo(video, msg, voiceChannel, playlist = false) {
+    const serverQueue = queue.get(msg.guild.id);
+    console.log(video);
 
 
-      const song = {
-        id: video.id,
-        title: Util.escapeMarkdown(video.title),
-        url: `https://www.youtube.com/watch?v=${video.id}`
+    const song = {
+      id: video.id,
+      title: Util.escapeMarkdown(video.title),
+      url: `https://www.youtube.com/watch?v=${video.id}`
+    };
+    if (!serverQueue) {
+      const queueConstruct = {
+        textChannel: msg.channel,
+        voiceChannel: voiceChannel,
+        connection: null,
+        songs: [],
+        volume: 5,
+        playing: true
       };
-      if (!serverQueue) {
-        const queueConstruct = {
-          textChannel: msg.channel,
-          voiceChannel: voiceChannel,
-          connection: null,
-          songs: [],
-          volume: 5,
-          playing: true
-        };
-        queue.set(msg.guild.id, queueConstruct);
+      queue.set(msg.guild.id, queueConstruct);
 
-        queueConstruct.songs.push(song);
+      queueConstruct.songs.push(song);
 
-        try {
-          var connection = await voiceChannel.join();
-          queueConstruct.connection = connection;
-          play(msg.guild, queueConstruct.songs[0]);
-        } catch (error) {
-          console.error(`${error}`);
-          queue.delete(msg.guild.id);
-          return msg.channel.send(`${error}`);
-        }
-      } else {
-        serverQueue.songs.push(song);
-        console.log(serverQueue.songs);
-        let addingSongToQueueEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`**${song.title}** добавлена в очередь`)
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version)
-        if (playlist) return undefined;
-
-        else return msg.channel.send(addingSongToQueueEmbed);
+      try {
+        var connection = await voiceChannel.join();
+        queueConstruct.connection = connection;
+        play(msg.guild, queueConstruct.songs[0]);
+      } catch (error) {
+        console.error(`${error}`);
+        queue.delete(msg.guild.id);
+        return msg.channel.send(`${error}`);
       }
-      return undefined;
-    }
-
-    function play(guild, song) {
-      const serverQueue = queue.get(guild.id);
-
-      if (!song) {
-        serverQueue.voiceChannel.leave();
-        queue.delete(guild.id);
-        return;
-      }
+    } else {
+      serverQueue.songs.push(song);
       console.log(serverQueue.songs);
-
-      const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
-        .on('end', reason => {
-          if (reason === 'Stream is not generating quickly enough.') console.log('Song ended.');
-          else console.log(reason);
-          serverQueue.songs.shift();
-          play(guild, serverQueue.songs[0]);
-        })
-        .on('error', error => console.error(error));
-      dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-
-      let playingNowEmbed = new Discord.RichEmbed()
+      let addingSongToQueueEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`Сейчас играет: **${song.title}**`)
+        .setDescription(`**${song.title}** добавлена в очередь`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version)
+      if (playlist) return undefined;
 
-      serverQueue.textChannel.send(playingNowEmbed);
+      else return msg.channel.send(addingSongToQueueEmbed);
     }
+    return undefined;
+  }
 
-    if (cmd === prefix + "ahelp") {
-      let bIcon = bot.user.displayAvatarURL;
-      let helpEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Список команд для админов: ")
-        .setColor(embedColor)
-        .setThumbnail(bIcon)
-        .addField(`${prefix}kick [ник] [причина]`, `Выгнать **пользователя** с **сервера**`)
-        .addField(`${prefix}clear [количество] `, `Очистить канал от [количества] сообщений`)
-        .addField(`${prefix}mute [ник] [время] [причина] `, `Заткнуть **пользователя**`)
-        .addField(`${prefix}unmute [ник] `, `Размутить **пользователя**`)
-        .addField(`${prefix}ban [ник] [время] [причина] `, `Забанить **пользователя** на сервере`)
-        .addField(`${prefix}unban [ник] `, `Разбанить **пользователя** на сервере`)
-        .addField(`${prefix}giverole [ник] [роль] `, `Выдать **пользователю** права для админ [команды]`)
-        .addField(`${prefix}giveroles [ник] `, `Выдать **пользователю** права для команд clear и mute`)
-        .addField(`${prefix}removeroles [ник] `, `Отобрать права у **пользователя** на все админ команды`)
-        .setFooter("Бот версии " + version)
+  function play(guild, song) {
+    const serverQueue = queue.get(guild.id);
 
-      message.delete().catch(O_o => { });
-      return message.channel.send(helpEmbed);
-    }
-
-    if (cmd === prefix + "botinfo") {
-      var botCreated = bot.user.createdAt.toString().split(' ');
-      var botCreatedAt = botCreated[2] + ' ' + botCreated[1] + ", " + botCreated[3];
-
-      let botEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Информация о боте: ")
-        .setColor(embedColor)
-        .setThumbnail(bIcon)
-        .addField("Название бота", bot.user.username, true)
-        .addField("Создан: ", botCreatedAt, true)
-        .addField("Создал: ", "<@301218562146566146>", true)
-        .setFooter("Бот версии " + version)
-
-      message.delete().catch(O_o => { });
-      return message.channel.send(botEmbed);
-    }
-
-    if (cmd === prefix + "report") {
-      let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-      let rSpellingEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`Правописание ${prefix}report`)
-        .addField("Правописание команды", `${prefix}report [ник] [причина]`)
-        .setColor(embedColor)
-        .setFooter("Бот версии " + version)
-
-
-      if (!rUser) {
-        let userNotFoundEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("Пользователь не найден")
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version)
-
-        message.delete().catch(O_o => { });
-        message.channel.send(userNotFoundEmbed);
-        return message.channel.send(rSpellingEmbed);
-      }
-
-      if (rUser.id == sender.id) {
-        let rCantReportUrSelf = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("Нельзя кинуть жалобу на себя")
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version)
-
-        message.delete().catch(O_o => { });
-        return message.channel.send(rCantReportUrSelf);
-      }
-
-      let rReason = args.join(' ').slice(22);
-      if (!rReason) {
-        let rNoReasonEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали причину")
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version)
-
-        message.delete().catch(O_o => { });
-        message.channel.send(rNoReasonEmbed);
-        return message.channel.send(rSpellingEmbed);
-      }
-
-      let reportEmbed = new Discord.RichEmbed()
-        .setThumbnail(rUser.displayAvatarURL)
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Жалоба")
-        .setColor(embedColor)
-        .addField("Жалоба на пользователя ", rUser, true)
-        .addField("Айди жертвы ", + rUser.id, true)
-        .addField("Пожаловался ", sender, true)
-        .addField("Айди жалобщика ", sender.id, true)
-        .addField("Время: ", message.createdAt, true)
-        .addField("Причина", rReason, true)
-        .setFooter("Бот версии " + version)
-
-      let reportEmbedText = new Discord.RichEmbed()
-        .setThumbnail(rUser.displayAvatarURL)
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Жалоба")
-        .setColor(embedColor)
-        .addField("**Вы** пожаловались на пользователя ", rUser, true)
-        .addField("Айди жертвы ", rUser.id, true)
-        .addField("Причина", rReason, true)
-        .setFooter("Бот версии " + version)
-
-      let reportsChannel = message.guild.channels.find('name', "rb-reports");
-
-      if (!reportsChannel)
-        return message.channel.send("Не удалось найти текстовый канал для репортов")
-
-      message.delete().catch(O_o => { });
-
-      message.channel.send(reportEmbedText)
-
-      reportsChannel.send(reportEmbed);
+    if (!song) {
+      serverQueue.voiceChannel.leave();
+      queue.delete(guild.id);
       return;
     }
+    console.log(serverQueue.songs);
 
-    var serverCreated = message.guild.createdAt.toString().split(' ');
-    var serverCreatedAt = serverCreated[2] + ' ' + serverCreated[1] + ", " + serverCreated[3];
+    const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
+      .on('end', reason => {
+        if (reason === 'Stream is not generating quickly enough.') console.log('Song ended.');
+        else console.log(reason);
+        serverQueue.songs.shift();
+        play(guild, serverQueue.songs[0]);
+      })
+      .on('error', error => console.error(error));
+    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
-    var serverJoined = message.guild.joinedAt.toString().split(' ');
-    var serverJoinedAt = serverJoined[2] + ' ' + serverJoined[1] + ", " + serverJoined[3];
+    let playingNowEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription(`Сейчас играет: **${song.title}**`)
+      .setColor(embedColor)
+      .setFooter("Бот версии " + version)
 
-    if (cmd === prefix + "serverinfo") {
-      let sicon = message.guild.iconURL;
-      let serverembed = new Discord.RichEmbed()
+    serverQueue.textChannel.send(playingNowEmbed);
+  }
+
+  if (cmd === prefix + "ahelp") {
+    let bIcon = bot.user.displayAvatarURL;
+    let helpEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription("Список команд для админов: ")
+      .setColor(embedColor)
+      .setThumbnail(bIcon)
+      .addField(`${prefix}kick [ник] [причина]`, `Выгнать **пользователя** с **сервера**`)
+      .addField(`${prefix}clear [количество] `, `Очистить канал от [количества] сообщений`)
+      .addField(`${prefix}mute [ник] [время] [причина] `, `Заткнуть **пользователя**`)
+      .addField(`${prefix}unmute [ник] `, `Размутить **пользователя**`)
+      .addField(`${prefix}ban [ник] [время] [причина] `, `Забанить **пользователя** на сервере`)
+      .addField(`${prefix}unban [ник] `, `Разбанить **пользователя** на сервере`)
+      .addField(`${prefix}giverole [ник] [роль] `, `Выдать **пользователю** права для админ [команды]`)
+      .addField(`${prefix}giveroles [ник] `, `Выдать **пользователю** права для команд clear и mute`)
+      .addField(`${prefix}removeroles [ник] `, `Отобрать права у **пользователя** на все админ команды`)
+      .setFooter("Бот версии " + version)
+
+    message.delete().catch(O_o => { });
+    return message.channel.send(helpEmbed);
+  }
+
+  if (cmd === prefix + "botinfo") {
+    var botCreated = bot.user.createdAt.toString().split(' ');
+    var botCreatedAt = botCreated[2] + ' ' + botCreated[1] + ", " + botCreated[3];
+
+    let botEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription("Информация о боте: ")
+      .setColor(embedColor)
+      .setThumbnail(bIcon)
+      .addField("Название бота", bot.user.username, true)
+      .addField("Создан: ", botCreatedAt, true)
+      .addField("Создал: ", "<@301218562146566146>", true)
+      .setFooter("Бот версии " + version)
+
+    message.delete().catch(O_o => { });
+    return message.channel.send(botEmbed);
+  }
+
+  if (cmd === prefix + "report") {
+    let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+    let rSpellingEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription(`Правописание ${prefix}report`)
+      .addField("Правописание команды", `${prefix}report [ник] [причина]`)
+      .setColor(embedColor)
+      .setFooter("Бот версии " + version)
+
+
+    if (!rUser) {
+      let userNotFoundEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Информация о сервере: ")
+        .setDescription("Пользователь не найден")
         .setColor(embedColor)
-        .setThumbnail(sicon)
-        .addField("Название сервера: ", message.guild.name, true)
-        .addField("Дата создания сервера ", serverCreatedAt, true)
-        .addField("Вы вошли на этот сервер ", serverJoinedAt, true)
-        .addField("Всего участников на сервере ", message.guild.memberCount, true)
         .setFooter("Бот версии " + version)
 
       message.delete().catch(O_o => { });
-      return message.channel.send(serverembed);
+      message.channel.send(userNotFoundEmbed);
+      return message.channel.send(rSpellingEmbed);
+    }
+
+    if (rUser.id == sender.id) {
+      let rCantReportUrSelf = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription("Нельзя кинуть жалобу на себя")
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+
+      message.delete().catch(O_o => { });
+      return message.channel.send(rCantReportUrSelf);
+    }
+
+    let rReason = args.join(' ').slice(22);
+    if (!rReason) {
+      let rNoReasonEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setDescription("<@" + sender.id + ">, вы не указали причину")
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version)
+
+      message.delete().catch(O_o => { });
+      message.channel.send(rNoReasonEmbed);
+      return message.channel.send(rSpellingEmbed);
+    }
+
+    let reportEmbed = new Discord.RichEmbed()
+      .setThumbnail(rUser.displayAvatarURL)
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription("Жалоба")
+      .setColor(embedColor)
+      .addField("Жалоба на пользователя ", rUser, true)
+      .addField("Айди жертвы ", + rUser.id, true)
+      .addField("Пожаловался ", sender, true)
+      .addField("Айди жалобщика ", sender.id, true)
+      .addField("Время: ", message.createdAt, true)
+      .addField("Причина", rReason, true)
+      .setFooter("Бот версии " + version)
+
+    let reportEmbedText = new Discord.RichEmbed()
+      .setThumbnail(rUser.displayAvatarURL)
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription("Жалоба")
+      .setColor(embedColor)
+      .addField("**Вы** пожаловались на пользователя ", rUser, true)
+      .addField("Айди жертвы ", rUser.id, true)
+      .addField("Причина", rReason, true)
+      .setFooter("Бот версии " + version)
+
+    let reportsChannel = message.guild.channels.find('name', "rb-reports");
+
+    if (!reportsChannel)
+      return message.channel.send("Не удалось найти текстовый канал для репортов")
+
+    message.delete().catch(O_o => { });
+
+    message.channel.send(reportEmbedText)
+
+    reportsChannel.send(reportEmbed);
+    return;
+  }
+
+  var serverCreated = message.guild.createdAt.toString().split(' ');
+  var serverCreatedAt = serverCreated[2] + ' ' + serverCreated[1] + ", " + serverCreated[3];
+
+  var serverJoined = message.guild.joinedAt.toString().split(' ');
+  var serverJoinedAt = serverJoined[2] + ' ' + serverJoined[1] + ", " + serverJoined[3];
+
+  if (cmd === prefix + "serverinfo") {
+    let sicon = message.guild.iconURL;
+    let serverembed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription("Информация о сервере: ")
+      .setColor(embedColor)
+      .setThumbnail(sicon)
+      .addField("Название сервера: ", message.guild.name, true)
+      .addField("Дата создания сервера ", serverCreatedAt, true)
+      .addField("Вы вошли на этот сервер ", serverJoinedAt, true)
+      .addField("Всего участников на сервере ", message.guild.memberCount, true)
+      .setFooter("Бот версии " + version)
+
+    message.delete().catch(O_o => { });
+    return message.channel.send(serverembed);
   }
 });
