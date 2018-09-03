@@ -610,7 +610,7 @@ bot.on("message", (message) => {
       .setColor(embedColor)
       .addField('Нарушитель ', toMute, true)
       .addField('Заткнул ', "<@" + message.author.id + ">", true)
-      .addField('Длительность ', `${muteTime}`, true)
+      .addField('Длительность ', `${muteTime}`)
       .addField('Причина ', `${muteReason}`, true)
       .setFooter("Бот версии " + version)
     message.delete().catch(O_o => { });
@@ -862,7 +862,7 @@ bot.on("message", (message) => {
         .setColor(embedColor)
         .addField('Нарушитель ', bUser, true)
         .addField('Забанил ', "<@" + message.author.id + ">", true)
-        .addField("Длительность ", `${banTime}`, true)
+        .addField("Длительность ", `${banTime}`)
         .addField("Причина ", `${bReason}`, true)
         .setFooter("Бот версии " + version)
       message.delete().catch(O_o => { });
