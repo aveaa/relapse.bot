@@ -814,6 +814,7 @@ bot.on("message", (message) => {
         return message.channel.send(bNotKickableEmbed);
       }
 
+      let banParameters = args.join(' ').slice(22);
       let banTime = args[1];
       if (!banTime) {
         let banNoTimeEmbed = new Discord.RichEmbed()
@@ -826,7 +827,7 @@ bot.on("message", (message) => {
         return message.channel.send(bSpellingEmbed);
       }
 
-      let bReason = args.join(' ').slice(22);
+      let bReason = banParameters.slice(banTime.length);
       if (!bReason) {
         let bNoReasonEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
