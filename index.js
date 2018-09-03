@@ -960,8 +960,8 @@ bot.on("message", (message) => {
     }
   }
 
-  if (message.channel.id == '479246318959853569' || message.channel.id == '485410945011810316' || message.channel.id == '478888400628482048' || message.channel.id == '484741380221042718') {
-    if (cmd === prefix + "help") {
+  //if (message.channel.id == '479246318959853569' || message.channel.id == '485410945011810316' || message.channel.id == '478888400628482048' || message.channel.id == '484741380221042718') {
+    if (message.channel.id != '479268624264200204') {
       let bIcon = bot.user.displayAvatarURL;
       let helpEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
