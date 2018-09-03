@@ -858,7 +858,8 @@ bot.on("message", (message) => {
         .setColor(embedColor)
         .addField('Нарушитель ', bUser, true)
         .addField('Забанил ', "<@" + message.author.id + ">", true)
-        .addField("Длительность, причина ", `${bReason}`, true)
+        .addField("Длительность ", `${banTime}`, true)
+        .addField("Причина ", `${bReason}`, true)
         .setFooter("Бот версии " + version)
       message.delete().catch(O_o => { });
       logChannel.send(bModLog);
