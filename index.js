@@ -564,7 +564,7 @@ bot.on("message", (message) => {
       functionMuteOne();
     }
 
-    let parameters = args.join(' ').slice(22);
+    let muteParameters = args.join(' ').slice(22);
     let muteTime = args[1];
     if (!message.member.roles.find("name", "R.B mute")) {
       let muteNoPerms = new Discord.RichEmbed()
@@ -587,7 +587,7 @@ bot.on("message", (message) => {
       return message.channel.send(toMuteSpellingEmbed);
     }
 
-    let muteReason = parameters.slice(muteTime.length);
+    let muteReason = muteParameters.slice(muteTime.length);
       if (!muteReason) {
       let muteNoReasonEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
