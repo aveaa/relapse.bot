@@ -18,8 +18,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
-//bot.login(botconfig.token);
+//bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -112,9 +112,30 @@ bot.on("ready", () => {
 });
 
 bot.on("guildMemberAdd", member => {
-  var joinRole = member.guild.roles.find('name', '🔰 Members')
+  let welcomeChannel = member.guild.channels.find('name', 'новички')
+  let welcomeEmbed = new Discord.RichEmbed()
+    .setAuthor(bot.user.username, bot.user.displayAvatarURL)
+    .setThumbnail(member.displayAvatarURL)
+    .setDescription(`Привет, <@${member.id}>! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
+    .setColor(embedColor)
+    .addField("Пользователей на сервере ", member.guild.memberCount, true)
+
+  welcomeChannel.send(welcomeEmbed);
+
+  let joinRole = member.guild.roles.find('name', '🔰 Members')
 
   member.addRole(joinRole);
+});
+
+bot.on('guildMemberRemove', member => {
+  let welcomeChannel = member.guild.channels.find('name', 'новички');
+  let byeEmbed = new Discord.RichEmbed()
+    .setAuthor(bot.user.username, bot.user.displayAvatarURL)
+    .setThumbnail(member.displayAvatarURL)
+    .setDescription(`**${member.user.username}** покинул нас(`)
+    .setColor(embedColor)
+    .addField("Пользователей на сервере ", member.guild.memberCount, true)
+  welcomeChannel.send(byeEmbed);
 });
 
 bot.on("message", (message) => {
@@ -179,7 +200,7 @@ bot.on("message", (message) => {
           .addField("ID ", sender.id, true)
           .addField("Аккаунт был создан ", userCreated[2] + ' ' + userCreated[1] + ", " + userCreated[3], true)
           .addField("Всего отправлено сообщений на сервере " + message.guild.name, userData[sender.id].msgSent, true)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         return message.channel.send(finalString);
       }
       if (iUser.id == sender.id) {
@@ -195,7 +216,7 @@ bot.on("message", (message) => {
           .addField("ID ", sender.id, true)
           .addField("Аккаунт был создан ", userCreated[2] + ' ' + userCreated[1] + ", " + userCreated[3], true)
           .addField("Всего отправлено сообщений на сервере " + message.guild.name, userData[sender.id].msgSent, true)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         return message.channel.send(finalString);
       }
       message.delete().catch(O_o => { });
@@ -213,7 +234,7 @@ bot.on("message", (message) => {
         .addField("ID: ", iUser.id, true)
         .addField("Аккаунт был создан ", userCreated[2] + ' ' + userCreated[1] + ", " + userCreated[3], true)
         .addField("Всего отправлено сообщений на сервере " + message.guild.name, userData[iUser.id].msgSent, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       return message.channel.send(finalString)
         .catch(error => {
           let infoError = new Discord.RichEmbed()
@@ -221,7 +242,7 @@ bot.on("message", (message) => {
             .setColor(embedColor)
             .setDescription("Ошибка")
             .addField("Причина", error)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL, sender.displayAvatarURL)
           message.channel.send(infoError);
         })
     }
@@ -234,7 +255,7 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}giverole`)
       .addField("Правописание команды", `${prefix}giverole [ник] [роль]`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
     if (message.member.roles.some(r => ["R.B"].includes(r.name))) {
 
       let gRole = args.join(' ').slice(22);
@@ -244,7 +265,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`У ${gUser} уже имеется данная роль`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(gNotMatchEmbed);
@@ -256,7 +277,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("**Вы** не указали роль")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(gNoRoleEmbed);
@@ -272,7 +293,7 @@ bot.on("message", (message) => {
               .setDescription("Ошибка")
               .addField("Причина", error)
               .setColor(embedColor)
-              .setFooter("Бот версии " + version)
+              .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
             return message.channel.send(gCantGiveRoleEmbed);
           })
@@ -287,12 +308,12 @@ bot.on("message", (message) => {
         .addField('Пользователь ', gUser, true)
         .addField('Выдал ', "<@" + message.author.id + ">", true)
         .addField("Роль ", gRole, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       let gChannelLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription(`Пользователю ${gUser} выданы права на использование команды ${gRole}`)
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       logChannel.send(gModLog)
       message.channel.send(gChannelLog).catch(console.error);
@@ -317,7 +338,7 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}giveroles`)
       .addField("Правописание команды", `${prefix}giveroles [ник]`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
     if (message.member.roles.some(r => ["R.B"].includes(r.name))) {
 
       if (gRolesUser.roles.find("name", `R.B mute`) && gRolesUser.roles.find("name", `R.B purge`)) {
@@ -325,7 +346,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`У ${gRolesUser} уже имеются обе роли`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(gRolesNotMatchEmbed);
@@ -342,7 +363,7 @@ bot.on("message", (message) => {
               .setDescription("Ошибка")
               .addField("Причина", error)
               .setColor(embedColor)
-              .setFooter("Бот версии " + version)
+              .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
             return message.channel.send(gCantGiveRoleEmbed);
           })
@@ -357,12 +378,12 @@ bot.on("message", (message) => {
         .addField('Пользователь ', gRolesUser, true)
         .addField('Выдал ', "<@" + message.author.id + ">", true)
         .addField("Команды ", "mute, clear", true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       let gRolesChannelLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription(`Пользователю ${gRolesUser} выданы права на использование команд mute, clear`)
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       logChannel.send(gRolesModLog)
       message.channel.send(gRolesChannelLog).catch(console.error);
@@ -396,7 +417,7 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}removeroles`)
       .addField("Правописание команды", `${prefix}removeroles [ник]`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
     if (message.member.roles.some(r => ["R.B"].includes(r.name))) {
 
       if (!rRolesUser.roles.find("name", `R.B mute`) && !rRolesUser.roles.find("name", `R.B purge`) && !rRolesUser.roles.find("name", `R.B kick`) && !rRolesUser.roles.find("name", `R.B ban`)) {
@@ -404,7 +425,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`У ${rRolesUser} нету доступа к админ командам`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(rRolesNotMatchEmbed);
@@ -423,7 +444,7 @@ bot.on("message", (message) => {
               .setDescription("Ошибка")
               .addField("Причина", error)
               .setColor(embedColor)
-              .setFooter("Бот версии " + version)
+              .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
             return message.channel.send(rCantRemoveRolesEmbed);
           })
@@ -438,12 +459,12 @@ bot.on("message", (message) => {
         .addField('Пользователь ', rRolesUser, true)
         .addField('Отобрал ', "<@" + message.author.id + ">", true)
         .addField("Команды ", "mute, clear, kick, ban", true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       let rRolesChannelLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription(`У пользователя ${rRolesUser} отобран доступ ко всем админ командам`)
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       logChannel.send(rRolesModLog)
       message.channel.send(rRolesChannelLog).catch(console.error);
@@ -467,7 +488,7 @@ bot.on("message", (message) => {
       .setColor(embedColor)
       .setDescription(`Правописание ${prefix}clear`)
       .addField(`Правописание команды ${prefix}clear`, `${prefix}clear [количество]`)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
     let clearSize = args.join(' ').slice(22);
 
@@ -479,7 +500,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setColor(embedColor)
           .setDescription(`У **вас** нет доступа к команде ${prefix}clear`)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.channel.send(clearNoRoleEmbed);
         return;
@@ -490,7 +511,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setColor(embedColor)
           .setDescription("Не указано количество сообщений")
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         message.channel.send(clearNoNumEmbed);
         return message.channel.send(clearSpellingEmbed);
       }
@@ -502,7 +523,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription(`Успешно удалено ${fetched.size} сообщений`)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.channel.bulkDelete(fetched)
         .catch(error => {
@@ -511,7 +532,7 @@ bot.on("message", (message) => {
             .setColor(embedColor)
             .setDescription("Ошибка")
             .addField("Причина", error)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
           message.channel.send(clearError);
         })
     }
@@ -527,14 +548,14 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}mute`)
       .addField(`Правописание команды`, `${prefix}mute [ник] [время] [причина]`)
       .addField(`Правописание времени`, `Секунда: [время]s \nМинута: [время]m \nЧас: [время]h \nДень: [время]d`)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
     if (!toMute) {
       let toMuteNotFindUser = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription("**Пользователь** не найден")
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       return message.channel.send(toMuteNotFindUser);
@@ -545,7 +566,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription(`Я не могу заткнуть **администрацию**`)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(toMuteCantMute);
     }
@@ -580,7 +601,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription("У **вас** нет прав для использования данной команды")
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(muteNoPerms);
     }
@@ -590,7 +611,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription("Вы не указали время")
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       message.channel.send(muteNoTimeEmbed);
       return message.channel.send(toMuteSpellingEmbed);
@@ -602,7 +623,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription("<@" + sender.id + ">, вы не указали причину")
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       message.channel.send(muteNoReasonEmbed);
@@ -617,7 +638,7 @@ bot.on("message", (message) => {
       .addField('Заткнул ', "<@" + message.author.id + ">", true)
       .addField('Длительность ', `${muteTime}`, true)
       .addField('Причина ', `${muteReason}`, true)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
     message.delete().catch(O_o => { });
 
     async function functionMuteTwo() {
@@ -634,7 +655,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription(`<@${toMute.id}> был размучен`)
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       logChannel.send(muteMuted);
     }, ms(muteTime));
@@ -648,14 +669,14 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}mute`)
       .addField(`Правописание команды`, `${prefix}mute [ник] [время] [причина]`)
       .addField(`Правописание времени`, `Секунда: [время]s \nМинута: [время]m \nЧас: [время]h \nДень: [время]d`)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
     if (!toUnMute) {
       let unMuteNotFindUser = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription("**Пользователь** не найден")
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       return message.channel.send(unMuteNotFindUser);
@@ -666,7 +687,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription(`У **вас** нет прав для использования данной команды`)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(unMuteCant);
     }
@@ -676,7 +697,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
         .setDescription(`**Пользователь** не замучен`)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(unMuteNoRole);
     }
@@ -689,14 +710,14 @@ bot.on("message", (message) => {
       .setColor(embedColor)
       .addField('Пользователь ', toUnMute, true)
       .addField('Размутил ', "<@" + message.author.id + ">", true)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
     message.delete().catch(O_o => { });
 
     let unMuted = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setDescription(`<@${toUnMute.id}> был размучен`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
     async function functionUnMuteTwo() {
       await (toUnMute.removeRole(unMuteRole.id));
@@ -713,14 +734,14 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}kick`)
       .addField("Правописание команды", `${prefix}kick [ник] [причина]`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
     if (message.member.roles.some(r => ["R.B kick"].includes(r.name))) {
       if (!kUser) {
         let kNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, вы не указали пользователя")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(kNotMatchEmbed);
@@ -732,7 +753,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, этого пользователя нельзя выгнать")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         return message.channel.send(kNotKickableEmbed);
@@ -744,7 +765,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, вы не указали причину")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(kNokReasonEmbed);
@@ -758,7 +779,7 @@ bot.on("message", (message) => {
             .setDescription("Я не могу выгнать пользователя.")
             .addField("Причина", error)
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           message.channel.send({ kCantKickEmbed });
         })
@@ -770,7 +791,7 @@ bot.on("message", (message) => {
         .addField('Нарушитель ', kUser, true)
         .addField('Выгнал ', "<@" + message.author.id + ">", true)
         .addField("Причина ", kReason, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       logChannel.send(kModLog)
       message.channel.send(kModLog).catch(console.error);
@@ -797,7 +818,7 @@ bot.on("message", (message) => {
       .addField("Правописание команды", `${prefix}ban [ник] [время] [причина]`)
       .addField(`Правописание времени`, `Секунда: [время]s \nМинута: [время]m \nЧас: [время]h \nДень: [время]d`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
     if (message.member.roles.some(r => ["R.B ban"].includes(r.name))) {
       if (!bUser) {
@@ -805,7 +826,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, вы не указали пользователя")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(bNotMatchEmbed);
@@ -817,7 +838,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, этого пользователя нельзя забанить")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         return message.channel.send(bNotKickableEmbed);
@@ -830,7 +851,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setColor(embedColor)
           .setDescription("Вы не указали время")
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         message.delete().catch(O_o => { });
         message.channel.send(banNoTimeEmbed);
         return message.channel.send(bSpellingEmbed);
@@ -842,7 +863,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, вы не указали причину")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(bNoReasonEmbed);
@@ -856,7 +877,7 @@ bot.on("message", (message) => {
             .setDescription("Невозможно забанить")
             .addField("Причина", error)
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           message.channel.send({ bCantBanEmbed });
         })
@@ -869,7 +890,7 @@ bot.on("message", (message) => {
         .addField('Забанил ', "<@" + message.author.id + ">", true)
         .addField("Длительность ", `${banTime}`, true)
         .addField("Причина ", `${bReason}`, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       logChannel.send(bModLog);
       message.channel.send(bModLog).catch(console.error);
@@ -880,7 +901,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`<@${bUser.id}> был разбанен`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         logChannel.send(bUnBan);
       }, ms(banTime));
@@ -908,7 +929,7 @@ bot.on("message", (message) => {
       .setDescription(`Правописание ${prefix}unban`)
       .addField("Правописание команды", `${prefix}unban [ник]`)
       .setColor(embedColor)
-      .setFooter("Бот версии " + version)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
     if (message.member.roles.some(r => ["R.B ban"].includes(r.name))) {
       if (!uBUser) {
@@ -916,7 +937,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, вы не указали пользователя")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(uBNotMatchEmbed);
@@ -931,7 +952,7 @@ bot.on("message", (message) => {
               .setDescription("Невозможно разбанить")
               .addField("Причина", error)
               .setColor(embedColor)
-              .setFooter("Бот версии " + version)
+              .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
             message.channel.send({ uBCantBanEmbed });
             return;
@@ -940,7 +961,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`**Пользователь** ${uBUser} был разбанен`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         let uBModLog = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
@@ -948,7 +969,7 @@ bot.on("message", (message) => {
           .setColor(embedColor)
           .addField('Пользователь ', uBUser, true)
           .addField('Разбанил ', "<@" + message.author.id + ">", true)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         message.delete().catch(O_o => { });
         logChannel.send(uBModLog);
         message.channel.send(uBChannelLog).catch(console.error);
@@ -989,7 +1010,7 @@ bot.on("message", (message) => {
         .addField(`${prefix}resume`, `Воспроизвести трек`)
         .addField(`${prefix}queue`, `Получить очередь`)
         .addField(`${prefix}music`, `Получить играющий трек`)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       return message.channel.send(helpEmbed);
@@ -1015,7 +1036,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription("**Вы** должны находится в голосовом канале")
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(plMustBeInVoiceEmbed);
@@ -1028,7 +1049,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription("У **меня** нет доступа для присоединения к данному голосовому каналу")
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(plNoPermsConnectEmbed);
@@ -1039,7 +1060,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription("У **меня** нет доступа для воспроизведения музыки в данном голосовом канале")
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(plNoPermsSpeakEmbed);
@@ -1050,7 +1071,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription("У **меня** недостаточно прав: EMBED_LINKS")
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.sendMessage(plNoPermsEmbedLinksEmbed);
@@ -1071,7 +1092,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription(`${playlist.title} добавлен в очередь`)
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(plAddingToQueueEmbed);
@@ -1093,7 +1114,7 @@ bot.on("message", (message) => {
                     ${videos.map(video2 => `${++index}. **${video2.title}**`).join('\n')}`)
 
                 .setColor(embedColor)
-                .setFooter("Бот версии " + version)
+                .setFooter("Бот версии " + version, sender.displayAvatarURL)
               msg.channel.sendEmbed(embed1).then(message => { message.delete(20000) })
 
               /////////////////
@@ -1110,7 +1131,7 @@ bot.on("message", (message) => {
                   .setAuthor(name = bot.user.username, icon_url = bIcon)
                   .setDescription('Никто не отменял число')
                   .setColor(embedColor)
-                  .setFooter("Бот версии " + version)
+                  .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
                 msg.delete().catch(O_o => { });
                 return msg.channel.send(plNoOneNumEmbed);
@@ -1126,7 +1147,7 @@ bot.on("message", (message) => {
                 .setAuthor(name = bot.user.username, icon_url = bIcon)
                 .setDescription('**Ваш** запрос не дал результатов')
                 .setColor(embedColor)
-                .setFooter("Бот версии " + version)
+                .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
               msg.delete().catch(O_o => { });
               return msg.channel.send(plNoSearchResultsEmbed);
@@ -1142,7 +1163,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription('**Вы** должны быть в голосовом канале для использования данной команды')
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         if (!msg.member.voiceChannel) {
           msg.delete().catch(O_o => { });
@@ -1153,7 +1174,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription('Очередь **пуста**.')
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(skipNoQueueCantSkipEmbed);
@@ -1163,7 +1184,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription('Пропуск')
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         serverQueue.connection.dispatcher.end(skipSkipping);
         msg.channel.send(skipSkipping);
@@ -1176,7 +1197,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription('**Вы** должны находится в голосовом канале')
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(stopNotInVoiceEmbed);
@@ -1186,7 +1207,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription('Очередь **пуста**')
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(stopNoQueueEmbed);
@@ -1196,7 +1217,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription('Отключаюсь')
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         serverQueue.songs = [];
         serverQueue.connection.dispatcher.end(stopStoppingAndLeavingVoiceEmbed);
@@ -1210,7 +1231,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription('**Вы** должны быть в голосовом канале для использования данной команды')
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(volMustBeInVoiceEmbed);
@@ -1220,7 +1241,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription('Очередь **пуста**')
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(volQueueIsClearEmbed);
@@ -1230,7 +1251,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription(`Громкость: **${serverQueue.volume}**`)
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(volVolumeIsEmbed);
@@ -1242,7 +1263,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`Громкость: **${args[1]}**`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         msg.delete().catch(O_o => { });
         return msg.channel.send(volVolumeArgsEmbed);
@@ -1254,7 +1275,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription('Очередь **пуста**')
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(musicNoQueueEmbed);
@@ -1263,7 +1284,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`Сейчас играет: **${serverQueue.songs[0].title}**`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         return msg.channel.sendEmbed(embedNP);
 
       } else if (command === `${prefix}ueue`) {
@@ -1273,7 +1294,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription(`Очередь **пуста**`)
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(qNoQueueEmbed);
@@ -1287,7 +1308,7 @@ bot.on("message", (message) => {
         ${serverQueue.songs.map(song => `${++index}. **${song.title}**`).join('\n')}
 **Сейчас играет:** **${serverQueue.songs[0].title}**`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         return msg.channel.sendEmbed(embedqu);
       } else if (command === `${prefix}pause`) {
         if (serverQueue && serverQueue.playing) {
@@ -1298,7 +1319,7 @@ bot.on("message", (message) => {
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setDescription(`Пауза`)
             .setColor(embedColor)
-            .setFooter("Бот версии " + version)
+            .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
           msg.delete().catch(O_o => { });
           return msg.channel.send(pausePausingEmbed);
@@ -1308,7 +1329,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`Очередь **пуста**`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         msg.delete().catch(O_o => { });
         return msg.channel.send(pauseNoQueueEmbed);
@@ -1365,7 +1386,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription(`**${song.title}** добавлена в очередь`)
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
         if (playlist) return undefined;
 
         else return msg.channel.send(addingSongToQueueEmbed);
@@ -1397,7 +1418,7 @@ bot.on("message", (message) => {
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setDescription(`Сейчас играет: **${song.title}**`)
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       serverQueue.textChannel.send(playingNowEmbed);
     }
@@ -1418,7 +1439,7 @@ bot.on("message", (message) => {
         .addField(`${prefix}giverole [ник] [роль] `, `Выдать **пользователю** права для админ [команды]`)
         .addField(`${prefix}giveroles [ник] `, `Выдать **пользователю** права для команд clear и mute`)
         .addField(`${prefix}removeroles [ник] `, `Отобрать права у **пользователя** на все админ команды`)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       return message.channel.send(helpEmbed);
@@ -1436,7 +1457,7 @@ bot.on("message", (message) => {
         .addField("Название бота", bot.user.username, true)
         .addField("Создан: ", botCreatedAt, true)
         .addField("Создал: ", "<@301218562146566146>", true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       return message.channel.send(botEmbed);
@@ -1449,7 +1470,7 @@ bot.on("message", (message) => {
         .setDescription(`Правописание ${prefix}report`)
         .addField("Правописание команды", `${prefix}report [ник] [причина]`)
         .setColor(embedColor)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
 
       if (!rUser) {
@@ -1457,7 +1478,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("Пользователь не найден")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(userNotFoundEmbed);
@@ -1469,7 +1490,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("Нельзя кинуть жалобу на себя")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         return message.channel.send(rCantReportUrSelf);
@@ -1481,7 +1502,7 @@ bot.on("message", (message) => {
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setDescription("<@" + sender.id + ">, вы не указали причину")
           .setColor(embedColor)
-          .setFooter("Бот версии " + version)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.delete().catch(O_o => { });
         message.channel.send(rNoReasonEmbed);
@@ -1501,7 +1522,7 @@ bot.on("message", (message) => {
         .addField("Пожаловался ", sender, true)
         .addField("Время ", serverCreatedAt, true)
         .addField("Причина", rReason, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       let reportEmbedText = new Discord.RichEmbed()
         .setThumbnail(rUser.displayAvatarURL)
@@ -1512,7 +1533,7 @@ bot.on("message", (message) => {
         .addField("Тэг ", rUser.user.tag, true)
         .addField("ID ", rUser.id, true)
         .addField("Причина", rReason, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       let reportsChannel = message.guild.channels.find('name', "rb-reports");
 
@@ -1544,7 +1565,7 @@ bot.on("message", (message) => {
         .addField("Дата создания сервера ", serverCreatedAt, true)
         .addField("Бот вошел на сервер ", serverJoinedAt, true)
         .addField("Всего участников на сервере ", message.guild.memberCount, true)
-        .setFooter("Бот версии " + version)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
       return message.channel.send(serverembed);
