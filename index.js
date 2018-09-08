@@ -338,7 +338,7 @@ bot.on("message", (message) => {
   }
 
   if (cmd === prefix + 'addxp') {
-    if (sender.roles.find('name', 'R.B')) {
+    if (message.member.roles.find('name', 'R.B')) {
       let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
       let xpCount = args[1];
 
