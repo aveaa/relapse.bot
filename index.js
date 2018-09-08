@@ -118,7 +118,7 @@ bot.on("guildMemberAdd", member => {
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(member.displayAvatarURL)
     .setDescription(`Привет, <@${member.id}>! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
-    .setColor(embedColor)
+    .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
 
   welcomeChannel.send(welcomeEmbed);
