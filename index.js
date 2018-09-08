@@ -377,11 +377,11 @@ bot.on("message", (message) => {
       .setDescription(`Добавлен опыт`)
       .setColor(embedColor)
       .addField(`Ник`, `<@${gXpUser.id}>`, true)
-      .addField(`Добавлено опыта`, 1000, true)
+      .addField(`Добавлено опыта`, '1000', true)
       .addField(`Добавил`, `<@${sender.id}>`, true)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
-    xp[gXpUser.user.id + message.guild.id].xp = curXp + 1000;
+    xp[gXpUser.user.id + message.guild.id].xp = xp[gXpUser.user.id + message.guild.id].xp + 1000;
 
     logChannel.send(xpAddedLogEmbed);
     return message.channel.send(xpAddedEmbed);
