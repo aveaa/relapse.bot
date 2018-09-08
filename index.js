@@ -19,8 +19,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
-//bot.login(botconfig.token);
+//bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -231,7 +231,7 @@ bot.on("message", (message) => {
   }
   */
 
-  if(cmd === prefix + 'data') {
+  if (cmd === prefix + 'data') {
     var data = fs.readFileSync('Storage/userData.json', 'utf8');
     var xpData = fs.readFileSync('Storage/xp.json', 'utf8');
 
@@ -327,56 +327,64 @@ bot.on("message", (message) => {
   }
 
   if (cmd === prefix + 'addxp') {
-    if (message.member.roles.find('name', 'R.B')) {
-      let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-      //let xpCount = args.join(' ').slice(22);
-
-      if (!gXpUser) {
-        let xpAddNoUserEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setThumbnail(sender.displayAvatarURL)
-          .setDescription(`Вы не указали пользователя`)
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version, sender.displayAvatarURL)
-
-        return message.channel.send(xpAddNoUserEmbed)
-      }
-
-      if (!xpCount) {
-        let xpNoCountEmbed = new Discord.RichEmbed()
-          .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setThumbnail(sender.displayAvatarURL)
-          .setDescription(`Вы не указали количество очков`)
-          .setColor(embedColor)
-          .setFooter("Бот версии " + version, sender.displayAvatarURL)
-
-        return message.channel.send(xpNoCountEmbed)
-      }
-
-      let xpAddedEmbed = new Discord.RichEmbed()
+    if (!message.member.roles.find('name', 'R.B')) {
+      let addXpNoPermsEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setDescription(`Добавлен опыт`)
+        .setDescription(`У **вас** нет прав на использование данной команды`)
         .setColor(embedColor)
-        .addField(`Ник`, `<@${gXpUser.id}>`, true)
-        .addField(`Добавлено опыта`, 1000, true)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
-      let xpAddedLogEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setThumbnail(sender.displayAvatarURL)
-        .setDescription(`Добавлен опыт`)
-        .setColor(embedColor)
-        .addField(`Ник`, `<@${gXpUser.id}>`, true)
-        .addField(`Добавлено опыта`, 1000, true)
-        .addField(`Добавил`, `<@${sender.id}>`, true)
-        .setFooter("Бот версии " + version, sender.displayAvatarURL)
-
-      xp[gXpUser.user.id + message.guild.id].xp = curXp + 1000;
-
-      logChannel.send(xpAddedLogEmbed);
-      return message.channel.send(xpAddedEmbed);
+      return message.channel.send(addXpNoPermsEmbed);
     }
+    let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+    //let xpCount = args.join(' ').slice(22);
+
+    if (!gXpUser) {
+      let xpAddNoUserEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`Вы не указали пользователя`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      return message.channel.send(xpAddNoUserEmbed)
+    }
+
+    if (!xpCount) {
+      let xpNoCountEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`Вы не указали количество очков`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      return message.channel.send(xpNoCountEmbed)
+    }
+
+    let xpAddedEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setThumbnail(sender.displayAvatarURL)
+      .setDescription(`Добавлен опыт`)
+      .setColor(embedColor)
+      .addField(`Ник`, `<@${gXpUser.id}>`, true)
+      .addField(`Добавлено опыта`, '1000', true)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+    let xpAddedLogEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setThumbnail(sender.displayAvatarURL)
+      .setDescription(`Добавлен опыт`)
+      .setColor(embedColor)
+      .addField(`Ник`, `<@${gXpUser.id}>`, true)
+      .addField(`Добавлено опыта`, 1000, true)
+      .addField(`Добавил`, `<@${sender.id}>`, true)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+    xp[gXpUser.user.id + message.guild.id].xp = curXp + 1000;
+
+    logChannel.send(xpAddedLogEmbed);
+    return message.channel.send(xpAddedEmbed);
   }
 
   if (!message.member.roles.find('name', lvlOneRole)) {
