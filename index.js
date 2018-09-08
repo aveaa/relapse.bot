@@ -383,7 +383,7 @@ bot.on("message", (message) => {
         .addField(`Добавил`, `<@${sender.id}>`, true)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
-      xp[gXpUser.user.id + message.guild.id].xp = xp[gXpUser.user.id + message.guild.id].xp + xpCount;
+      xp[gXpUser.user.id + message.guild.id].xp = curXp + xpCount;
 
       logChannel.send(xpAddedLogEmbed);
       return message.channel.send(xpAddedEmbed);
