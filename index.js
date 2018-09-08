@@ -13,6 +13,7 @@ const queue = new Map();
 const ytdl = require('ytdl-core');
 const gif = require("gif-search");
 
+let xp = require("./Storage/xp.json");
 var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 
 var prefix = botconfig.prefix;
@@ -133,9 +134,55 @@ bot.on('guildMemberRemove', member => {
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(member.displayAvatarURL)
     .setDescription(`**${member.user.username}** покинул нас(`)
-    .setColor(embedColor)
+    .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
   welcomeChannel.send(byeEmbed);
+});
+
+const events = {
+  MESSAGE_REACTION_ADD: 'messageReactionAdd',
+  MESSAGE_REACTION_REMOVE: 'messageReactionRemove'
+};
+
+bot.on('raw', async event => {
+  if (!events.hasOwnProperty(event.t)) return;
+
+  const { d: data } = event;
+  const user = bot.users.get(data.user_id);
+  const channel = bot.channels.get(data.channel_id) || await user.createDM();
+
+  if (channel.messages.has(data.message_id)) return;
+
+  const message = await channel.fetchMessage(data.message_id);
+
+  const emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+  const reaction = message.reactions.get(emojiKey);
+
+  bot.emit(events[event.t], reaction, user);
+});
+
+bot.on('messageReactionAdd', (reaction, user) => {
+  console.log(`${user.username} reacted with "${reaction.emoji.name}".`);
+
+  if (reaction.emoji.name == "ahhahah") {
+    user.addRole(user.guild.roles.find('name', 'Зелёный'))
+  }
+
+  if (reaction.emoji.name == "proman") {
+    user.addRole(user.guild.roles.find('name', 'Красный'))
+  }
+});
+
+bot.on('messageReactionRemove', (reaction, user) => {
+  console.log(`${user.username} removed their "${reaction.emoji.name}" reaction.`);
+
+  if (reaction.emoji.name == "ahhahah") {
+    user.removeRole(user.guild.roles.find('name', 'Зелёный'))
+  }
+
+  if (reaction.emoji.name == "proman") {
+    user.removeRole(user.guild.roles.find('name', 'Красный'))
+  }
 });
 
 bot.on("message", (message) => {
@@ -183,6 +230,368 @@ bot.on("message", (message) => {
     }
   }
   */
+
+  let xpAdd = Math.floor(Math.random() * 10) + 15;
+  console.log(xpAdd);
+
+  senderGuild = sender.id + message.guild.id;
+
+  if (!xp[senderGuild]) {
+    xp[senderGuild] = {
+      xp: 0,
+      level: 1
+    };
+  }
+
+  let curXp = xp[senderGuild].xp;
+  let curLvl = xp[senderGuild].level;
+
+  let lvlOneRole = 'мёртвый кустик';
+  let lvlTwoRole = 'нубик';
+  let lvlThreeRole = 'главный нубик';
+  let lvlFourRole = 'элитный нубас';
+  let lvlFiveRole = 'игрок';
+  let lvlSixRole = 'профессионал';
+  let lvlSevenRole = 'главный про';
+  let lvlEightRole = 'алмазник';
+  let lvlNineRole = 'Элитный алмазник';
+  let lvlTenRole = 'Херобрин';
+  let lvlElevenRole = 'Коллекционер Мертвых Кустиков';
+
+  xp[senderGuild].xp = curXp + xpAdd;
+
+  fs.writeFile("Storage/xp.json", JSON.stringify(xp), (err) => {
+    if (err) console.log(err)
+  });
+
+  if (cmd === prefix + "xp" || cmd === prefix + "exp" || cmd === prefix + "lvl" || cmd === prefix + "level") {
+    if (!xp[senderGuild]) {
+      xp[senderGuild] = {
+        xp: 0,
+        level: 1
+      };
+    }
+
+    let lvlEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setThumbnail(sender.displayAvatarURL)
+      .setDescription("Уровень <@" + sender.id + ">")
+      .setColor(embedColor)
+      .addField("Уровень ", curLvl, true)
+      .addField("XP ", curXp, true)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+    message.channel.send(lvlEmbed);
+  }
+
+  if (message.member.roles.find('name', lvlOneRole && xp[senderGuild].xp < 30)) {
+    xp[senderGuild].xp = 30;
+  }
+  if (message.member.roles.find('name', lvlTwoRole && xp[senderGuild].xp < 100)) {
+    xp[senderGuild].xp = 100;
+  }
+  if (message.member.roles.find('name', lvlThreeRole && xp[senderGuild].xp < 500)) {
+    xp[senderGuild].xp = 500;
+  }
+  if (message.member.roles.find('name', lvlFourRole && xp[senderGuild].xp < 1000)) {
+    xp[senderGuild].xp = 1000;
+  }
+  if (message.member.roles.find('name', lvlFiveRole && xp[senderGuild].xp < 2500)) {
+    xp[senderGuild].xp = 2500;
+  }
+  if (message.member.roles.find('name', lvlSixRole && xp[senderGuild].xp < 5000)) {
+    xp[senderGuild].xp = 5000;
+  }
+  if (message.member.roles.find('name', lvlSevenRole && xp[senderGuild].xp < 10000)) {
+    xp[senderGuild].xp = 10000;
+  }
+  if (message.member.roles.find('name', lvlEightRole && xp[senderGuild].xp < 12500)) {
+    xp[senderGuild].xp = 12500;
+  }
+  if (message.member.roles.find('name', lvlNineRole && xp[senderGuild].xp < 15000)) {
+    xp[senderGuild].xp = 15000;
+  }
+  if (message.member.roles.find('name', lvlTenRole && xp[senderGuild].xp < 17500)) {
+    xp[senderGuild].xp = 17500;
+  }
+  if (message.member.roles.find('name', lvlElevenRole && xp[senderGuild].xp < 20000)) {
+    xp[senderGuild].xp = 20000;
+  }
+
+  if (cmd === prefix + 'addxp') {
+    if (sender.user.roles.find('name', 'R.B')) {
+      let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+      let xpCount = args[1];
+
+      if(!gXpUser) {
+        let xpAddNoUserEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setThumbnail(sender.displayAvatarURL)
+          .setDescription(`Вы не указали пользователя`)
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+          return message.channel.send(xpAddNoUserEmbed)
+      }
+
+      if (!xpCount) {
+        let xpNoCountEmbed = new Discord.RichEmbed()
+          .setAuthor(name = bot.user.username, icon_url = bIcon)
+          .setThumbnail(sender.displayAvatarURL)
+          .setDescription(`Вы не указали количество очков`)
+          .setColor(embedColor)
+          .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+        return message.channel.send(xpNoCountEmbed)
+      }
+
+      let xpAddedEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`Добавлен опыт`)
+        .setColor(embedColor)
+        .addField(`Ник`, `<@${gXpUser.id}>`, true)
+        .addField(`Добавлено опыта`, xpCount, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      let xpAddedLogEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`Добавлен опыт`)
+        .setColor(embedColor)
+        .addField(`Ник`, `<@${gXpUser.id}>`, true)
+        .addField(`Добавлено опыта`, xpCount, true)
+        .addField(`Добавил`, `<@${sender.id}>`, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      xp[gXpUser.user.id + message.guild.id].xp = xp[gXpUser.user.id + message.guild.id].xp + xpCount;
+
+      logChannel.send(xpAddedLogEmbed);
+      return message.channel.send(xpAddedEmbed);
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlOneRole)) {
+    if (xp[senderGuild].xp >= 30) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlOneRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlOneRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlTwoRole)) {
+    if (xp[senderGuild].xp >= 100) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlTwoRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlTwoRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlThreeRole)) {
+    if (xp[senderGuild].xp >= 500) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlThreeRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlThreeRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlFourRole)) {
+    if (xp[senderGuild].xp >= 1000) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlFourRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlFourRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlFiveRole)) {
+    if (xp[senderGuild].xp >= 2500) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlFiveRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlFiveRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlSixRole)) {
+    if (xp[senderGuild].xp >= 5000) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlSixRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlSixRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlSevenRole)) {
+    if (xp[senderGuild].xp >= 10000) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlSevenRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlSevenRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlEightRole)) {
+    if (xp[senderGuild].xp >= 12500) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlEightRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlEightRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlNineRole)) {
+    if (xp[senderGuild].xp >= 15000) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlNineRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlNineRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlTenRole)) {
+    if (xp[senderGuild].xp >= 17500) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlTenRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlTenRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  if (!message.member.roles.find('name', lvlElevenRole)) {
+    if (xp[senderGuild].xp >= 20000) {
+      let lvlUp = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setTitle("Повышен уровень!")
+        .setDescription(`<@${sender.id}> был повышен в уровне!`)
+        .setColor(embedColor)
+        .addField(`Новый уровень`, lvlElevenRole, true)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      message.member.addRole(message.guild.roles.find('name', lvlElevenRole))
+      xp[senderGuild].level = curLvl + 1;
+
+      message.channel.send(lvlUp)
+        .then(message.delete(), ms(60000));
+      return;
+    }
+  }
+
+  //let difference = nxtLvlXp - curXp;
 
   if (cmd.startsWith(prefix + "info")) {
     if (cmd === prefix + "info") {
@@ -1004,12 +1413,7 @@ bot.on("message", (message) => {
         .addField(`${prefix}serverInfo `, `Получить информацию о **сервере**`)
         .addField(`${prefix}ahelp `, `Получить список команд для **админов**`)
         .addField(`${prefix}report [ник] [причина] `, `Кинуть жалобу на **пользователя**`)
-        .addField(`${prefix}play [ссылка] `, `Добавить трек в **очередь**`)
-        .addField(`${prefix}skip`, `Пропустить трек`)
-        .addField(`${prefix}pause`, `Приостановить трек`)
-        .addField(`${prefix}resume`, `Воспроизвести трек`)
-        .addField(`${prefix}queue`, `Получить очередь`)
-        .addField(`${prefix}music`, `Получить играющий трек`)
+        .addField(`${prefix}lvl или ${prefix}xp или ${prefix}exp или ${prefix}level`, `Посмотреть уровень и колчичество очков`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
