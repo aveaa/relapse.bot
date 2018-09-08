@@ -231,6 +231,14 @@ bot.on("message", (message) => {
   }
   */
 
+  if(cmd === prefix + 'data') {
+    var data = fs.readFileSync('Storage/userData.json', 'utf8');
+    var xpData = fs.readFileSync('Storage/xp.json', 'utf8');
+
+    console.log(xpData);
+    console.log(data);
+  }
+
   let xpAdd = Math.floor(Math.random() * 10) + 15;
   console.log(xpAdd);
 
@@ -321,7 +329,7 @@ bot.on("message", (message) => {
   if (cmd === prefix + 'addxp') {
     if (message.member.roles.find('name', 'R.B')) {
       let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-      let xpCount = args.join(' ').slice(22);
+      //let xpCount = args.join(' ').slice(22);
 
       if (!gXpUser) {
         let xpAddNoUserEmbed = new Discord.RichEmbed()
@@ -351,7 +359,7 @@ bot.on("message", (message) => {
         .setDescription(`Добавлен опыт`)
         .setColor(embedColor)
         .addField(`Ник`, `<@${gXpUser.id}>`, true)
-        .addField(`Добавлено опыта`, xpCount, true)
+        .addField(`Добавлено опыта`, 1000, true)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       let xpAddedLogEmbed = new Discord.RichEmbed()
@@ -360,11 +368,11 @@ bot.on("message", (message) => {
         .setDescription(`Добавлен опыт`)
         .setColor(embedColor)
         .addField(`Ник`, `<@${gXpUser.id}>`, true)
-        .addField(`Добавлено опыта`, xpCount, true)
+        .addField(`Добавлено опыта`, 1000, true)
         .addField(`Добавил`, `<@${sender.id}>`, true)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
-      xp[gXpUser.user.id + message.guild.id].xp = curXp + xpCount;
+      xp[gXpUser.user.id + message.guild.id].xp = curXp + 1000;
 
       logChannel.send(xpAddedLogEmbed);
       return message.channel.send(xpAddedEmbed);
