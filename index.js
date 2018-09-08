@@ -231,25 +231,6 @@ bot.on("message", (message) => {
   }
   */
 
-  if (cmd === prefix + 'send') {
-    if (sender.id == "301218562146566146") {
-      let sendParameters = args.join(' ').slice(22);
-      let sendChannel = args[1];
-      let sendMessage = sendParameters.slice(sendChannel.length);
-
-      if (!channel || !message) {
-        return message.channel.send('error');
-      }
-      let sendMessageEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setThumbnail(sender.displayAvatarURL)
-        .setDescription(sendMessage)
-        .setColor(embedColor)
-
-      return message.guild.channels.find('name', sendChannel).send(sendMessageEmbed);
-    }
-  }
-
   let xpAdd = Math.floor(Math.random() * 10) + 15;
   console.log(xpAdd);
 
@@ -340,7 +321,7 @@ bot.on("message", (message) => {
   if (cmd === prefix + 'addxp') {
     if (message.member.roles.find('name', 'R.B')) {
       let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-      let xpCount = args[1];
+      let xpCount = args.join(' ').slice(22);
 
       if (!gXpUser) {
         let xpAddNoUserEmbed = new Discord.RichEmbed()
