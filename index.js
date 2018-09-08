@@ -116,7 +116,7 @@ bot.on("guildMemberAdd", member => {
   let welcomeChannel = member.guild.channels.find('name', 'новички')
   let welcomeEmbed = new Discord.RichEmbed()
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
-    .setThumbnail(member.member.displayAvatarURL)
+    .setThumbnail(member.user.displayAvatarURL)
     .setDescription(`Привет, <@${member.id}>! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
     .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
@@ -132,7 +132,7 @@ bot.on('guildMemberRemove', member => {
   let welcomeChannel = member.guild.channels.find('name', 'новички');
   let byeEmbed = new Discord.RichEmbed()
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
-    .setThumbnail(member.member.displayAvatarURL)
+    .setThumbnail(member.user.displayAvatarURL)
     .setDescription(`**${member.user.username}** покинул нас(`)
     .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
