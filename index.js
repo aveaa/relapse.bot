@@ -19,8 +19,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
-//bot.login(botconfig.token);
+//bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -231,6 +231,25 @@ bot.on("message", (message) => {
   }
   */
 
+  if (cmd === prefix + 'send') {
+    if (sender.id == "301218562146566146") {
+      let sendParameters = args.join(' ').slice(22);
+      let sendChannel = args[1];
+      let sendMessage = sendParameters.slice(sendChannel.length);
+
+      if (!channel || !message) {
+        return message.channel.send('error');
+      }
+      let sendMessageEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(sendMessage)
+        .setColor(embedColor)
+
+      return message.guild.channels.find('name', sendChannel).send(sendMessageEmbed);
+    }
+  }
+
   let xpAdd = Math.floor(Math.random() * 10) + 15;
   console.log(xpAdd);
 
@@ -323,7 +342,7 @@ bot.on("message", (message) => {
       let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
       let xpCount = args[1];
 
-      if(!gXpUser) {
+      if (!gXpUser) {
         let xpAddNoUserEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setThumbnail(sender.displayAvatarURL)
@@ -331,7 +350,7 @@ bot.on("message", (message) => {
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
-          return message.channel.send(xpAddNoUserEmbed)
+        return message.channel.send(xpAddNoUserEmbed)
       }
 
       if (!xpCount) {
