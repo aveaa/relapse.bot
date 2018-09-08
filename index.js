@@ -19,8 +19,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-//bot.login(process.env.BOT_TOKEN);
-bot.login(botconfig.token);
+bot.login(process.env.BOT_TOKEN);
+//bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
