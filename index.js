@@ -350,7 +350,7 @@ bot.on("message", (message) => {
 
       return message.channel.send(xpAddNoUserEmbed)
     }
-
+/*
     if (!xpCount) {
       let xpNoCountEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
@@ -361,7 +361,7 @@ bot.on("message", (message) => {
 
       return message.channel.send(xpNoCountEmbed)
     }
-
+*/
     let xpAddedEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setThumbnail(sender.displayAvatarURL)
