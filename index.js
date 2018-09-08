@@ -19,8 +19,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
-//bot.login(botconfig.token);
+//bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -338,7 +338,7 @@ bot.on("message", (message) => {
   }
 
   if (cmd === prefix + 'addxp') {
-    if (sender.user.roles.find('name', 'R.B')) {
+    if (sender.roles.find('name', 'R.B')) {
       let gXpUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
       let xpCount = args[1];
 
