@@ -364,7 +364,7 @@ bot.on("message", (message) => {
 */
     let xpAddedEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setThumbnail(sender.displayAvatarURL)
+      .setThumbnail(gXpUser.user.displayAvatarURL)
       .setDescription(`Добавлен опыт`)
       .setColor(embedColor)
       .addField(`Ник`, `<@${gXpUser.id}>`, true)
@@ -373,13 +373,20 @@ bot.on("message", (message) => {
 
     let xpAddedLogEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setThumbnail(sender.displayAvatarURL)
+      .setThumbnail(gXpUser.user.displayAvatarURL)
       .setDescription(`Добавлен опыт`)
       .setColor(embedColor)
       .addField(`Ник`, `<@${gXpUser.id}>`, true)
       .addField(`Добавлено опыта`, '1000', true)
       .addField(`Добавил`, `<@${sender.id}>`, true)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+    if (!xp[gXpUser.user.id + message.guild.id]) {
+      xp[gXpUser.user.id + message.guild.id] = {
+          xp: 0,
+          level: 1
+        }
+      }
 
     xp[gXpUser.user.id + message.guild.id].xp = xp[gXpUser.user.id + message.guild.id].xp + 1000;
 
