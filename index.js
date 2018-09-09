@@ -19,8 +19,8 @@ var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
 
-bot.login(process.env.BOT_TOKEN);
-//bot.login(botconfig.token);
+//bot.login(process.env.BOT_TOKEN);
+bot.login(botconfig.token);
 
 function clean(text) {
   if (typeof (text) === "string")
@@ -110,6 +110,49 @@ bot.on("ready", () => {
   console.log(``);
   console.log(`Код писал http://relapse.pw`);
   //console.log(`Дополнил код http://vladciphersky.xyz | где есть "SQD<name>"`);
+});
+
+// Logs
+bot.on('channelCreate', async channel => {
+  let logChannel = channel.guild.channels.find('name', 'rb-logs');
+
+  if(!logChannel) {
+    console.log('Канал для логов не найден');
+  }
+
+  let channelCreatedEmbed = new Discord.RichEmbed()
+    .setAuthor(bot.user.username, bot.user.displayAvatarURL)
+    .setThumbnail(bot.user.displayAvatarURL)
+    .setTitle(`Логи`)
+    .setDescription(`Был создан канал`)
+    .setColor(botconfig.embedColor)
+    .addField("Название ", channel.name, true)
+    .addField('Тип канала', `${channel.type}`, true)
+    .addField('ID канала', `${channel.id}`, true)
+    .setFooter("Бот версии " + botconfig.version, bot.user.displayAvatarURL)
+
+  logChannel.send(channelCreatedEmbed);
+});
+
+bot.on('channelDelete', async channel => {
+  let logChannel = channel.guild.channels.find('name', 'rb-logs');
+
+  if (!logChannel) {
+    console.log('Канал для логов не найден');
+  }
+
+  let channelCreatedEmbed = new Discord.RichEmbed()
+    .setAuthor(bot.user.username, bot.user.displayAvatarURL)
+    .setThumbnail(bot.user.displayAvatarURL)
+    .setTitle(`Логи`)
+    .setDescription(`Канал был удален`)
+    .setColor(botconfig.embedColor)
+    .addField("Название ", channel.name, true)
+    .addField('Тип канала', `${channel.type}`, true)
+    .addField('ID канала', `${channel.id}`, true)
+    .setFooter("Бот версии " + botconfig.version, bot.user.displayAvatarURL)
+
+  logChannel.send(channelCreatedEmbed);
 });
 
 bot.on("guildMemberAdd", member => {
@@ -1944,7 +1987,7 @@ bot.on("message", (message) => {
         .setDescription("Жалоба на пользователя")
         .setColor(embedColor)
         .addField("Ник", rUser, true)
-        .addField("Тэг ", + rUser.user.tag, true)
+        .addField("Тэг ", + rUser.tag, true)
         .addField("ID ", + rUser.id, true)
         .addField("Пожаловался ", sender, true)
         .addField("Время ", serverCreatedAt, true)
