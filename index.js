@@ -1,4 +1,4 @@
-// Основной код писал http://relapse.pw
+// Код писал http://relapse.pw
 console.log(`Загрузка..`);
 const botconfig = require("./botconfig.json");
 const Discord = require('discord.js');
@@ -15,6 +15,7 @@ const gif = require("gif-search");
 
 let xp = require("./Storage/xp.json");
 var userData = JSON.parse(fs.readFileSync("Storage/userData.json", "utf8"));
+let warnData = JSON.parse(fs.readFileSync("Storage/warns.json", "utf8"));
 
 var prefix = botconfig.prefix;
 let welcomeMsg = botconfig.welcome;
@@ -34,7 +35,7 @@ bot.on("guildMemberAdd", async (user) => {
   const reason = "Бот";
   if (user.user.username.toLowerCase().includes("kaboom") || user.user.username.toLowerCase().includes("telebotian") || user.user.username.toLowerCase().includes("jsopbots")) {
     if (user.bannable) {
-      await user.sendMessage("Вас заблокировала анти-бот система.\n\nЕсли это ошибка - напишите администратору сервера следующее:\n```gid: " + user.guild.id + " | uid: " + user.id + " | name: " + user.user.tag + "```")
+      await user.sendMessage(":small_orange_diamond: lВас заблокировала анти-бот система.\n\nЕсли это ошибка - напишите администратору сервера следующее:\n```gid: " + user.guild.id + " | uid: " + user.id + " | name: " + user.user.tag + "```")
       await timeout(300)
       user.ban(reason)
     }
@@ -92,31 +93,23 @@ bot.on("ready", () => {
     }
 
     /*
-        bot.user.setPresence({
-          game: {
-          status: 'Online',
-          url: `https://www.twitch.tv/rustnt`,
-          name: `на канале RusTNT | ${prefix}help`,
           type: 1 // 0 - Играет в | 1 - Стримит | 2 - Слушает | 3 - Смотрит
-        }
-        })
     */
   }, 10000)
 
   console.log("Бот запущен. Немного информации:");
   console.log(" ");
-  console.log(`Discord Тэг: ${bot.user.tag}`);
+  console.log(`Discord Тег: ${bot.user.tag}`);
   console.log(`Discord ID: ${bot.user.id}`);
   console.log(``);
   console.log(`Код писал http://relapse.pw`);
-  //console.log(`Дополнил код http://vladciphersky.xyz | где есть "SQD<name>"`);
 });
 
 // Logs
 bot.on('channelCreate', async channel => {
   let logChannel = channel.guild.channels.find('name', 'rb-logs');
 
-  if(!logChannel) {
+  if (!logChannel) {
     console.log('Канал для логов не найден');
   }
 
@@ -124,7 +117,7 @@ bot.on('channelCreate', async channel => {
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(bot.user.displayAvatarURL)
     .setTitle(`Логи`)
-    .setDescription(`Был создан канал`)
+    .setDescription(`:small_orange_diamond: Создан канал`)
     .setColor(botconfig.embedColor)
     .addField("Название ", channel.name, true)
     .addField('Тип канала', `${channel.type}`, true)
@@ -144,7 +137,7 @@ bot.on('channelDelete', async channel => {
   let channelCreatedEmbed = new Discord.RichEmbed()
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(bot.user.displayAvatarURL)
-    .setTitle(`Логи`)
+    .setTitle(`:small_orange_diamond: Логи`)
     .setDescription(`Канал был удален`)
     .setColor(botconfig.embedColor)
     .addField("Название ", channel.name, true)
@@ -160,7 +153,7 @@ bot.on("guildMemberAdd", member => {
   let welcomeEmbed = new Discord.RichEmbed()
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(member.user.displayAvatarURL)
-    .setDescription(`Привет, <@${member.id}>! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
+    .setDescription(`:small_orange_diamond: Привет, <@${member.username}>! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
     .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
 
@@ -176,7 +169,7 @@ bot.on('guildMemberRemove', member => {
   let byeEmbed = new Discord.RichEmbed()
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(member.user.displayAvatarURL)
-    .setDescription(`**${member.user.username}** покинул нас(`)
+    .setDescription(`:small_orange_diamond: **${member.user.username}** покинул нас(`)
     .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
   welcomeChannel.send(byeEmbed);
@@ -204,30 +197,6 @@ bot.on('raw', async event => {
   bot.emit(events[event.t], reaction, user);
 });
 
-bot.on('messageReactionAdd', (reaction, user) => {
-  console.log(`${user.username} reacted with "${reaction.emoji.name}".`);
-
-  if (reaction.emoji.name == "ahhahah") {
-    user.addRole(user.guild.roles.find('name', 'Зелёный'))
-  }
-
-  if (reaction.emoji.name == "proman") {
-    user.addRole(user.guild.roles.find('name', 'Красный'))
-  }
-});
-
-bot.on('messageReactionRemove', (reaction, user) => {
-  console.log(`${user.username} removed their "${reaction.emoji.name}" reaction.`);
-
-  if (reaction.emoji.name == "ahhahah") {
-    user.removeRole(user.guild.roles.find('name', 'Зелёный'))
-  }
-
-  if (reaction.emoji.name == "proman") {
-    user.removeRole(user.guild.roles.find('name', 'Красный'))
-  }
-});
-
 bot.on("message", (message) => {
   if (message.author.bot) return;
 
@@ -252,34 +221,14 @@ bot.on("message", (message) => {
     if (err) console.error(err);
   });
 
-  /*
-  if (cmd.startsWith(prefix + "eval")) {
-      if (cmd === prefix + "eval") {
-        if(["301218562146566146", "178404926869733376"].includes(message.author.id)) {
-          try {
-          var code = args.join(" ");
-          var evaled = eval(code);
-  
-          if (typeof evaled !== "string")
-            evaled = require("util").inspect(evaled);
-  
-          message.channel.sendCode("xl", clean(evaled));
-        } catch(err) {
-          message.channel.sendMessage(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
-        }
-      } else {
-        message.reply(`у **Вас** нет доступа к команде ${prefix}eval`)
-      }
-    }
-  }
-  */
-
   if (cmd === prefix + 'data') {
-    var data = fs.readFileSync('Storage/userData.json', 'utf8');
+    var msgData = fs.readFileSync('Storage/userData.json', 'utf8');
     var xpData = fs.readFileSync('Storage/xp.json', 'utf8');
+    var warnsData = fs.readFileSync('Storage/warns.json', 'utf8');
 
-    console.log(xpData);
-    console.log(data);
+    console.log(`xp: ${xpData}`);
+    console.log(`msg: ${msgData}`);
+    console.log(`warns: ${warnsData}`);
   }
 
   let xpAdd = Math.floor(Math.random() * 10) + 15;
@@ -326,7 +275,7 @@ bot.on("message", (message) => {
     let lvlEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setThumbnail(sender.displayAvatarURL)
-      .setDescription("Уровень <@" + sender.id + ">")
+      .setDescription(":small_orange_diamond: Уровень <@" + sender.id + ">")
       .setColor(embedColor)
       .addField("Уровень ", curLvl, true)
       .addField("XP ", curXp, true)
@@ -368,13 +317,122 @@ bot.on("message", (message) => {
   if (message.member.roles.find('name', lvlElevenRole && xp[senderGuild].xp < 20000)) {
     xp[senderGuild].xp = 20000;
   }
+/*
+  if (cmd === prefix + 'warn') {
+    let wUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+    let wReason = args.join(' ').slice(22);
+    if (!message.member.roles.find('name', 'R.B kick')) {
+      let warnNoPermsEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`:x: У **вас** нет прав на использование данной команды`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
+      return message.channel.send(warnNoPermsEmbed);
+    }
+
+    if (!wUser) {
+      let warnNoUserEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`:x: **Вы** не указали **пользователя**`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      return message.channel.send(warnNoUserEmbed);
+    }
+
+    if (wUser.hasPermission("ADMINISTRATOR")) {
+      let warnCantWarnEmbed = new Discord.RichEmbed()
+        .setAuthor(name = bot.user.username, icon_url = bIcon)
+        .setThumbnail(sender.displayAvatarURL)
+        .setDescription(`:x: Я не могу предупредить **Администратора**`)
+        .setColor(embedColor)
+        .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+      return message.channel.send(warnCantWarnEmbed);
+    }
+
+    if (!warnData[wUser.id + message.guild.id]) {
+      warnData[wUser.id + message.guild.id] = {
+        warns: 0
+      }
+    }
+
+    warnData[wUser.id + message.guild.id].warns++;
+
+    fs.writeFile("./Storage/warns.json", JSON.stringify(warns), (err) => {
+      if (err) console.log(err);
+    });
+
+    let warnLogEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setThumbnail(sender.displayAvatarURL)
+      .setDescription(`:small_orange_diamond: Предупреждение для <@${wUser}>`)
+      .setColor(embedColor)
+      .addField(`Количество предупреждений`, `${warnData[wUser.id + message.guild.id].warns}`, true)
+      .addField(`Причина`, `${wReason}`, true)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+    let warnModLogEmbed = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setThumbnail(bot.user.displayAvatarURL)
+      .setDescription(`:small_orange_diamond: Предупреждение`)
+      .setColor(embedColor)
+      .addField(`Ник`, `<@${wUser.id}>`, true)
+      .addField(`Предупредил`, `<@${sender.id}>`, true)
+      .addField(`Количество предупреждений`, `${warnData[wUser.id + message.guild.id].warns}`, true)
+      .addField(`Причина`, `${wReason}`, true)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
+
+    message.delete().catch(O_o => { });
+    logChannel.send(warnModLogEmbed);
+    message.channel.send(warnLogEmbed);
+
+    if(warnData[wUser.id + message.guild.id].warns == 2) {
+      let warnMuteRole = message.guild.roles.find('name', 'Muted');
+      if(!warnMuteRole) {
+        console.log('Не найдена роль "Muted"');
+      }
+
+      let warnMuteTime = "30m";
+      await(wUser.addRole(warnMuteRole.id));
+      message.channel.send(`:small_orange_diamond: Получив 2 предупреждения <@${wUser.id}> был заткнут на 30 минут `);
+      logChannel.send(`:small_orange_diamond: Получив 2 предупреждения <@${wUser.id}> был заткнут на 30 минут `);
+
+      setTimeout(function() {
+        if(!wUser.roles.find('name', 'Muted')) {
+          return console.log(`У пользователя нету роли "Muted"`);
+        }
+        wUser.removeRole(warnMuteRole.id);
+        message.channel.send(`:small_orange_diamond: <@${wUser.id}> был размучен`);
+        logChannel.send(`:small_orange_diamond: <@${wUser.id}> был размучен`);
+      }, ms(warnMuteTime));
+    }
+
+    if (warnData[wUser.id + message.guild.id].warns == 3) {
+      message.guild.member(wUser).ban(wReason);
+
+      let warnBanTime = "1d";
+      await(wUser.addRole(warnMuteRole.id));
+      message.channel.send(`:small_orange_diamond: Получив 3 предупреждения <@${wUser.id}> был забанен на сутки `);
+      logChannel.send(`:small_orange_diamond: Получив 3 предупреждения <@${wUser.id}> был забанен на сутки `);
+
+      setTimeout(function () {
+        message.guild.unban(wUser);
+        message.channel.send(`:small_orange_diamond: <@${wUser.id}> был разбанен`);
+        logChannel.send(`:small_orange_diamond: <@${wUser.id}> был разбанен`);
+      }, ms(warnBanTime));
+    }
+  }
+*/
   if (cmd === prefix + 'addxp') {
     if (!message.member.roles.find('name', 'R.B')) {
       let addXpNoPermsEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setDescription(`У **вас** нет прав на использование данной команды`)
+        .setDescription(`:x: У **вас** нет прав на использование данной команды`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -387,28 +445,17 @@ bot.on("message", (message) => {
       let xpAddNoUserEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setDescription(`Вы не указали пользователя`)
+        .setDescription(`:x: Вы не указали пользователя`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       return message.channel.send(xpAddNoUserEmbed)
     }
-/*
-    if (!xpCount) {
-      let xpNoCountEmbed = new Discord.RichEmbed()
-        .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setThumbnail(sender.displayAvatarURL)
-        .setDescription(`Вы не указали количество очков`)
-        .setColor(embedColor)
-        .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
-      return message.channel.send(xpNoCountEmbed)
-    }
-*/
     let xpAddedEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setThumbnail(gXpUser.user.displayAvatarURL)
-      .setDescription(`Добавлен опыт`)
+      .setDescription(`:white_check_mark: Добавлен опыт`)
       .setColor(embedColor)
       .addField(`Ник`, `<@${gXpUser.id}>`, true)
       .addField(`Добавлено опыта`, '1000', true)
@@ -417,7 +464,7 @@ bot.on("message", (message) => {
     let xpAddedLogEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setThumbnail(gXpUser.user.displayAvatarURL)
-      .setDescription(`Добавлен опыт`)
+      .setDescription(`:small_orange_diamond: Добавлен опыт`)
       .setColor(embedColor)
       .addField(`Ник`, `<@${gXpUser.id}>`, true)
       .addField(`Добавлено опыта`, '1000', true)
@@ -426,10 +473,10 @@ bot.on("message", (message) => {
 
     if (!xp[gXpUser.user.id + message.guild.id]) {
       xp[gXpUser.user.id + message.guild.id] = {
-          xp: 0,
-          level: 1
-        }
+        xp: 0,
+        level: 1
       }
+    }
 
     xp[gXpUser.user.id + message.guild.id].xp = xp[gXpUser.user.id + message.guild.id].xp + 1000;
 
@@ -442,7 +489,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlOneRole, true)
@@ -451,8 +498,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlOneRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -462,7 +508,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlTwoRole, true)
@@ -471,8 +517,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlTwoRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -482,7 +527,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlThreeRole, true)
@@ -491,8 +536,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlThreeRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -502,7 +546,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlFourRole, true)
@@ -511,8 +555,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlFourRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -522,7 +565,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlFiveRole, true)
@@ -531,8 +574,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlFiveRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -542,7 +584,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlSixRole, true)
@@ -551,8 +593,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlSixRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -562,7 +603,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlSevenRole, true)
@@ -571,8 +612,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlSevenRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -582,7 +622,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlEightRole, true)
@@ -591,8 +631,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlEightRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -602,7 +641,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlNineRole, true)
@@ -611,8 +650,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlNineRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -622,7 +660,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlTenRole, true)
@@ -631,8 +669,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlTenRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -642,7 +679,7 @@ bot.on("message", (message) => {
       let lvlUp = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(sender.displayAvatarURL)
-        .setTitle("Повышен уровень!")
+        .setTitle(":small_orange_diamond: Повышен уровень!")
         .setDescription(`<@${sender.id}> был повышен в уровне!`)
         .setColor(embedColor)
         .addField(`Новый уровень`, lvlElevenRole, true)
@@ -651,8 +688,7 @@ bot.on("message", (message) => {
       message.member.addRole(message.guild.roles.find('name', lvlElevenRole))
       xp[senderGuild].level = curLvl + 1;
 
-      message.channel.send(lvlUp)
-        .then(message.delete(), ms(60000));
+      message.channel.send(lvlUp);
       return;
     }
   }
@@ -668,10 +704,10 @@ bot.on("message", (message) => {
         let finalString = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setThumbnail(sender.displayAvatarURL)
-          .setDescription("Информация о <@" + sender.id + ">")
+          .setDescription(":small_orange_diamond: Информация о <@" + sender.id + ">")
           .setColor(embedColor)
           .addField("Ник ", sender.username, true)
-          .addField("Тэг ", sender.tag, true)
+          .addField("Тег ", sender.tag, true)
           .addField("ID ", sender.id, true)
           .addField("Аккаунт был создан ", userCreated[2] + ' ' + userCreated[1] + ", " + userCreated[3], true)
           .addField("Всего отправлено сообщений на сервере " + message.guild.name, userData[sender.id].msgSent, true)
@@ -684,10 +720,10 @@ bot.on("message", (message) => {
         let finalString = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setThumbnail(sender.displayAvatarURL)
-          .setDescription("Информация о <@" + sender.id + ">")
+          .setDescription(":small_orange_diamond: Информация о <@" + sender.id + ">")
           .setColor(embedColor)
           .addField("Ник ", sender.username, true)
-          .addField("Тэг ", sender.tag, true)
+          .addField("Тег ", sender.tag, true)
           .addField("ID ", sender.id, true)
           .addField("Аккаунт был создан ", userCreated[2] + ' ' + userCreated[1] + ", " + userCreated[3], true)
           .addField("Всего отправлено сообщений на сервере " + message.guild.name, userData[sender.id].msgSent, true)
@@ -702,10 +738,10 @@ bot.on("message", (message) => {
       let finalString = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setThumbnail(iUser.user.displayAvatarURL)
-        .setDescription("Информация о <@" + iUser.id + ">")
+        .setDescription(":small_orange_diamond: Информация о <@" + iUser.id + ">")
         .setColor(embedColor)
         .addField("Ник: ", `<@${iUser.id}>`, true)
-        .addField("Тэг ", iUser.user.tag, true)
+        .addField("Тег ", iUser.user.tag, true)
         .addField("ID: ", iUser.id, true)
         .addField("Аккаунт был создан ", userCreated[2] + ' ' + userCreated[1] + ", " + userCreated[3], true)
         .addField("Всего отправлено сообщений на сервере " + message.guild.name, userData[iUser.id].msgSent, true)
@@ -727,7 +763,7 @@ bot.on("message", (message) => {
     let gUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
     let gSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`Правописание ${prefix}giverole`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}giverole`)
       .addField("Правописание команды", `${prefix}giverole [ник] [роль]`)
       .setColor(embedColor)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -738,7 +774,7 @@ bot.on("message", (message) => {
       if (gUser.roles.find("name", `R.B ${gRole}`)) {
         let gNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`У ${gUser} уже имеется данная роль`)
+          .setDescription(`:small_orange_diamond: У ${gUser} уже имеется данная роль`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -750,7 +786,7 @@ bot.on("message", (message) => {
       if (!gRole) {
         let gNoRoleEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("**Вы** не указали роль")
+          .setDescription(":x: **Вы** не указали роль")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -765,7 +801,7 @@ bot.on("message", (message) => {
           .catch(error => {
             let gCantGiveRoleEmbed = new Discord.RichEmbed()
               .setAuthor(name = bot.user.username, icon_url = bIcon)
-              .setDescription("Ошибка")
+              .setDescription(":x: Ошибка")
               .addField("Причина", error)
               .setColor(embedColor)
               .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -778,7 +814,7 @@ bot.on("message", (message) => {
 
       let gModLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('Выдана роль')
+        .setDescription(':small_orange_diamond: Выдана роль')
         .setColor(embedColor)
         .addField('Пользователь ', gUser, true)
         .addField('Выдал ', "<@" + message.author.id + ">", true)
@@ -786,7 +822,7 @@ bot.on("message", (message) => {
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       let gChannelLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`Пользователю ${gUser} выданы права на использование команды ${gRole}`)
+        .setDescription(`:white_check_mark: Пользователю ${gUser} выданы права на использование команды ${gRole}`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
@@ -795,7 +831,7 @@ bot.on("message", (message) => {
     } else {
       let gNoPermsEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('У **вас** нет прав для использования данной команды')
+        .setDescription(':x: У **вас** нет прав для использования данной команды')
         .setColor(embedColor)
 
       message.channel.send(gNoPermsEmbed);
@@ -810,7 +846,7 @@ bot.on("message", (message) => {
     let gRolesUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
     let gRolesSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`Правописание ${prefix}giveroles`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}giveroles`)
       .addField("Правописание команды", `${prefix}giveroles [ник]`)
       .setColor(embedColor)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -819,7 +855,7 @@ bot.on("message", (message) => {
       if (gRolesUser.roles.find("name", `R.B mute`) && gRolesUser.roles.find("name", `R.B purge`)) {
         let gRolesNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`У ${gRolesUser} уже имеются обе роли`)
+          .setDescription(`:small_orange_diamond: У ${gRolesUser} уже имеются обе роли`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -835,7 +871,7 @@ bot.on("message", (message) => {
           .catch(error => {
             let gCantGiveRoleEmbed = new Discord.RichEmbed()
               .setAuthor(name = bot.user.username, icon_url = bIcon)
-              .setDescription("Ошибка")
+              .setDescription(":x: Ошибка")
               .addField("Причина", error)
               .setColor(embedColor)
               .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -848,7 +884,7 @@ bot.on("message", (message) => {
 
       let gRolesModLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('Выданы права')
+        .setDescription(':small_orange_diamond: Выданы права')
         .setColor(embedColor)
         .addField('Пользователь ', gRolesUser, true)
         .addField('Выдал ', "<@" + message.author.id + ">", true)
@@ -856,7 +892,7 @@ bot.on("message", (message) => {
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       let gRolesChannelLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`Пользователю ${gRolesUser} выданы права на использование команд mute, clear`)
+        .setDescription(`:white_check_mark: Пользователю ${gRolesUser} выданы права на использование команд mute, clear`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
@@ -876,20 +912,11 @@ bot.on("message", (message) => {
     }
   }
 
-  if (cmd === prefix + "welcome") {
-    if (welcomeMsg === "1") {
-      welcomeMsg = "0";
-      return;
-    }
-
-    return welcomeMsg = "1";
-  }
-
   if (cmd === prefix + "removeroles") {
     let rRolesUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
     let rRolesSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`Правописание ${prefix}removeroles`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}removeroles`)
       .addField("Правописание команды", `${prefix}removeroles [ник]`)
       .setColor(embedColor)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -898,7 +925,7 @@ bot.on("message", (message) => {
       if (!rRolesUser.roles.find("name", `R.B mute`) && !rRolesUser.roles.find("name", `R.B purge`) && !rRolesUser.roles.find("name", `R.B kick`) && !rRolesUser.roles.find("name", `R.B ban`)) {
         let rRolesNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`У ${rRolesUser} нету доступа к админ командам`)
+          .setDescription(`:x: У ${rRolesUser} нету доступа к админ командам`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -916,7 +943,7 @@ bot.on("message", (message) => {
           .catch(error => {
             let rCantRemoveRolesEmbed = new Discord.RichEmbed()
               .setAuthor(name = bot.user.username, icon_url = bIcon)
-              .setDescription("Ошибка")
+              .setDescription(":x: Ошибка")
               .addField("Причина", error)
               .setColor(embedColor)
               .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -929,7 +956,7 @@ bot.on("message", (message) => {
 
       let rRolesModLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('Отобраны права')
+        .setDescription(':small_orange_diamond: Отобраны права')
         .setColor(embedColor)
         .addField('Пользователь ', rRolesUser, true)
         .addField('Отобрал ', "<@" + message.author.id + ">", true)
@@ -937,7 +964,7 @@ bot.on("message", (message) => {
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       let rRolesChannelLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`У пользователя ${rRolesUser} отобран доступ ко всем админ командам`)
+        .setDescription(`:white_check_mark: У пользователя ${rRolesUser} отобран доступ ко всем админ командам`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
@@ -946,7 +973,7 @@ bot.on("message", (message) => {
     } else {
       let rRolesNoPermsEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('У **вас** нет прав для использования данной команды')
+        .setDescription(':x: У **вас** нет прав для использования данной команды')
         .setColor(embedColor)
 
       message.channel.send(rRolesNoPermsEmbed);
@@ -961,7 +988,7 @@ bot.on("message", (message) => {
     let clearSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setColor(embedColor)
-      .setDescription(`Правописание ${prefix}clear`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}clear`)
       .addField(`Правописание команды ${prefix}clear`, `${prefix}clear [количество]`)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -974,7 +1001,7 @@ bot.on("message", (message) => {
         let clearNoRoleEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setColor(embedColor)
-          .setDescription(`У **вас** нет доступа к команде ${prefix}clear`)
+          .setDescription(`:x: У **вас** нет доступа к команде ${prefix}clear`)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         message.channel.send(clearNoRoleEmbed);
@@ -985,7 +1012,7 @@ bot.on("message", (message) => {
         let clearNoNumEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setColor(embedColor)
-          .setDescription("Не указано количество сообщений")
+          .setDescription(":x: Не указано количество сообщений")
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
         message.channel.send(clearNoNumEmbed);
         return message.channel.send(clearSpellingEmbed);
@@ -997,7 +1024,7 @@ bot.on("message", (message) => {
       let clearDeletedMsgEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription(`Успешно удалено ${fetched.size} сообщений`)
+        .setDescription(`:white_check_mark: Успешно удалено ${fetched.size} сообщений`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.channel.bulkDelete(fetched)
@@ -1005,7 +1032,7 @@ bot.on("message", (message) => {
           let clearError = new Discord.RichEmbed()
             .setAuthor(name = bot.user.username, icon_url = bIcon)
             .setColor(embedColor)
-            .setDescription("Ошибка")
+            .setDescription(":x: Ошибка")
             .addField("Причина", error)
             .setFooter("Бот версии " + version, sender.displayAvatarURL)
           message.channel.send(clearError);
@@ -1020,7 +1047,7 @@ bot.on("message", (message) => {
     let toMuteSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setColor(embedColor)
-      .setDescription(`Правописание ${prefix}mute`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}mute`)
       .addField(`Правописание команды`, `${prefix}mute [ник] [время] [причина]`)
       .addField(`Правописание времени`, `Секунда: [время]s \nМинута: [время]m \nЧас: [время]h \nДень: [время]d`)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1029,7 +1056,7 @@ bot.on("message", (message) => {
       let toMuteNotFindUser = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription("**Пользователь** не найден")
+        .setDescription(":x: **Пользователь** не найден")
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
@@ -1040,7 +1067,7 @@ bot.on("message", (message) => {
       let toMuteCantMute = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription(`Я не могу заткнуть **администрацию**`)
+        .setDescription(`:x: Я не могу заткнуть **администрацию**`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(toMuteCantMute);
@@ -1075,7 +1102,7 @@ bot.on("message", (message) => {
       let muteNoPerms = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription("У **вас** нет прав для использования данной команды")
+        .setDescription(":x: У **вас** нет прав для использования данной команды")
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(muteNoPerms);
@@ -1085,7 +1112,7 @@ bot.on("message", (message) => {
       let muteNoTimeEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription("Вы не указали время")
+        .setDescription(":x: Вы не указали время")
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       message.channel.send(muteNoTimeEmbed);
@@ -1096,7 +1123,7 @@ bot.on("message", (message) => {
     if (!muteReason) {
       let muteNoReasonEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("<@" + sender.id + ">, вы не указали причину")
+        .setDescription(":x: <@" + sender.id + ">, вы не указали причину")
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1107,7 +1134,7 @@ bot.on("message", (message) => {
 
     let muteModLog = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription('Мут')
+      .setDescription(':small_orange_diamond: Мут')
       .setColor(embedColor)
       .addField('Нарушитель ', toMute, true)
       .addField('Заткнул ', "<@" + message.author.id + ">", true)
@@ -1116,9 +1143,22 @@ bot.on("message", (message) => {
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
     message.delete().catch(O_o => { });
 
+    let muteChannelLog = new Discord.RichEmbed()
+      .setAuthor(name = bot.user.username, icon_url = bIcon)
+      .setDescription(':white_check_mark: Пользователь был успешно заткнут')
+      .setColor(embedColor)
+      .addField('Нарушитель ', toMute, true)
+      .addField('Длительность ', `${muteTime}`, true)
+      .addField('Причина ', `${muteReason}`, true)
+      .setFooter("Бот версии " + version, sender.displayAvatarURL)
+    message.delete().catch(O_o => { });
+
     async function functionMuteTwo() {
+      if(!toMute.roles.find('name', 'Muted')) {
+        return;
+      }
       await (toMute.addRole(muterole.id));
-      message.channel.send(muteModLog);
+      message.channel.send(muteChannelLog);
       logChannel.send(muteModLog);
     }
 
@@ -1128,7 +1168,7 @@ bot.on("message", (message) => {
       toMute.removeRole(muterole.id);
       let muteMuted = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`<@${toMute.id}> был размучен`)
+        .setDescription(`:small_orange_diamond: <@${toMute.id}> был размучен`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1141,7 +1181,7 @@ bot.on("message", (message) => {
     let UnMuteSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
       .setColor(embedColor)
-      .setDescription(`Правописание ${prefix}mute`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}mute`)
       .addField(`Правописание команды`, `${prefix}mute [ник] [время] [причина]`)
       .addField(`Правописание времени`, `Секунда: [время]s \nМинута: [время]m \nЧас: [время]h \nДень: [время]d`)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1150,7 +1190,7 @@ bot.on("message", (message) => {
       let unMuteNotFindUser = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription("**Пользователь** не найден")
+        .setDescription(":x: **Пользователь** не найден")
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
@@ -1161,7 +1201,7 @@ bot.on("message", (message) => {
       let unMuteCant = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription(`У **вас** нет прав для использования данной команды`)
+        .setDescription(`:x: У **вас** нет прав для использования данной команды`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(unMuteCant);
@@ -1171,7 +1211,7 @@ bot.on("message", (message) => {
       let unMuteNoRole = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
         .setColor(embedColor)
-        .setDescription(`**Пользователь** не замучен`)
+        .setDescription(`:x: **Пользователь** не замучен`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
       message.delete().catch(O_o => { });
       return message.channel.send(unMuteNoRole);
@@ -1181,7 +1221,7 @@ bot.on("message", (message) => {
 
     let unMuteModLog = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription('Пользователь был размучен')
+      .setDescription(':small_orange_diamond: Пользователь был размучен')
       .setColor(embedColor)
       .addField('Пользователь ', toUnMute, true)
       .addField('Размутил ', "<@" + message.author.id + ">", true)
@@ -1190,7 +1230,7 @@ bot.on("message", (message) => {
 
     let unMuted = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`<@${toUnMute.id}> был размучен`)
+      .setDescription(`:white_check_mark: <@${toUnMute.id}> был размучен`)
       .setColor(embedColor)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1206,7 +1246,7 @@ bot.on("message", (message) => {
     let kUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
     let kSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`Правописание ${prefix}kick`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}kick`)
       .addField("Правописание команды", `${prefix}kick [ник] [причина]`)
       .setColor(embedColor)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1214,7 +1254,7 @@ bot.on("message", (message) => {
       if (!kUser) {
         let kNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали пользователя")
+          .setDescription(":x: <@" + sender.id + ">, вы не указали пользователя")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1226,7 +1266,7 @@ bot.on("message", (message) => {
       if (!kUser.kickable) {
         let kNotKickableEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, этого пользователя нельзя выгнать")
+          .setDescription(":x: <@" + sender.id + ">, этого пользователя нельзя выгнать")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1238,7 +1278,7 @@ bot.on("message", (message) => {
       if (!kReason) {
         let kNokReasonEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали причину")
+          .setDescription(":x: <@" + sender.id + ">, вы не указали причину")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1251,7 +1291,7 @@ bot.on("message", (message) => {
         .catch(error => {
           let kCantKickEmbed = new Discord.RichEmbed()
             .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription("Я не могу выгнать пользователя.")
+            .setDescription(":x: Я не могу выгнать пользователя.")
             .addField("Причина", error)
             .setColor(embedColor)
             .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1261,7 +1301,7 @@ bot.on("message", (message) => {
 
       let kModLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('Кик')
+        .setDescription(':small_orange_diamond: Кик')
         .setColor(embedColor)
         .addField('Нарушитель ', kUser, true)
         .addField('Выгнал ', "<@" + message.author.id + ">", true)
@@ -1273,7 +1313,7 @@ bot.on("message", (message) => {
     } else {
       let kNoPermsEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('У **вас** нет прав для использования данной команды')
+        .setDescription(':x: У **вас** нет прав для использования данной команды')
         .setColor(embedColor)
 
       message.channel.send(kNoPermsEmbed);
@@ -1289,7 +1329,7 @@ bot.on("message", (message) => {
 
     let bSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`Правописание ${prefix}ban`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}ban`)
       .addField("Правописание команды", `${prefix}ban [ник] [время] [причина]`)
       .addField(`Правописание времени`, `Секунда: [время]s \nМинута: [время]m \nЧас: [время]h \nДень: [время]d`)
       .setColor(embedColor)
@@ -1299,7 +1339,7 @@ bot.on("message", (message) => {
       if (!bUser) {
         let bNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали пользователя")
+          .setDescription(":x: <@" + sender.id + ">, вы не указали пользователя")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1311,7 +1351,7 @@ bot.on("message", (message) => {
       if (!bUser.kickable) {
         let bNotKickableEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, этого пользователя нельзя забанить")
+          .setDescription(":x: <@" + sender.id + ">, этого пользователя нельзя забанить")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1325,7 +1365,7 @@ bot.on("message", (message) => {
         let banNoTimeEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
           .setColor(embedColor)
-          .setDescription("Вы не указали время")
+          .setDescription(":x: Вы не указали время")
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
         message.delete().catch(O_o => { });
         message.channel.send(banNoTimeEmbed);
@@ -1336,7 +1376,7 @@ bot.on("message", (message) => {
       if (!bReason) {
         let bNoReasonEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали причину")
+          .setDescription(":x: <@" + sender.id + ">, вы не указали причину")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1349,7 +1389,7 @@ bot.on("message", (message) => {
         .catch(error => {
           let bCantBanEmbed = new Discord.RichEmbed()
             .setAuthor(name = bot.user.username, icon_url = bIcon)
-            .setDescription("Невозможно забанить")
+            .setDescription(":x: Невозможно забанить")
             .addField("Причина", error)
             .setColor(embedColor)
             .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1359,7 +1399,7 @@ bot.on("message", (message) => {
 
       let bModLog = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('Бан')
+        .setDescription(':small_orange_diamond: Бан')
         .setColor(embedColor)
         .addField('Нарушитель ', bUser, true)
         .addField('Забанил ', "<@" + message.author.id + ">", true)
@@ -1374,7 +1414,7 @@ bot.on("message", (message) => {
         message.guild.unban(bUser);
         let bUnBan = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`<@${bUser.id}> был разбанен`)
+          .setDescription(`:small_orange_diamond: <@${bUser.id}> был разбанен`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1401,7 +1441,7 @@ bot.on("message", (message) => {
 
     let uBSpellingEmbed = new Discord.RichEmbed()
       .setAuthor(name = bot.user.username, icon_url = bIcon)
-      .setDescription(`Правописание ${prefix}unban`)
+      .setDescription(`:small_orange_diamond: Правописание ${prefix}unban`)
       .addField("Правописание команды", `${prefix}unban [ник]`)
       .setColor(embedColor)
       .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1410,7 +1450,7 @@ bot.on("message", (message) => {
       if (!uBUser) {
         let uBNotMatchEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали пользователя")
+          .setDescription(":x: <@" + sender.id + ">, вы не указали пользователя")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1424,7 +1464,7 @@ bot.on("message", (message) => {
           .catch(error => {
             let uBCantBanEmbed = new Discord.RichEmbed()
               .setAuthor(name = bot.user.username, icon_url = bIcon)
-              .setDescription("Невозможно разбанить")
+              .setDescription(":x: Невозможно разбанить")
               .addField("Причина", error)
               .setColor(embedColor)
               .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1434,13 +1474,13 @@ bot.on("message", (message) => {
           });
         let uBChannelLog = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription(`**Пользователь** ${uBUser} был разбанен`)
+          .setDescription(`:white_check_mark: **Пользователь** ${uBUser} был разбанен`)
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
         let uBModLog = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription('Разбан')
+          .setDescription(':small_orange_diamond: Разбан')
           .setColor(embedColor)
           .addField('Пользователь ', uBUser, true)
           .addField('Разбанил ', "<@" + message.author.id + ">", true)
@@ -1453,7 +1493,7 @@ bot.on("message", (message) => {
     } else {
       let uBNoPermsEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription('У **вас** нет прав для использования данной команды')
+        .setDescription(':x: У **вас** нет прав для использования данной команды')
         .setColor(embedColor)
 
       message.channel.send(uBNoPermsEmbed);
@@ -1474,12 +1514,12 @@ bot.on("message", (message) => {
         .setDescription("Список команд бота: ")
         .setColor(embedColor)
         .setThumbnail(bIcon)
-        .addField(`${prefix}info [ник]`, `Получить информацию о **пользователе**`)
+        .addField(`${prefix}info [@ник]`, `Получить информацию о **пользователе**`)
         .addField(`${prefix}botInfo`, `Получить информацию о **боте**`)
         .addField(`${prefix}serverInfo `, `Получить информацию о **сервере**`)
         .addField(`${prefix}ahelp `, `Получить список команд для **админов**`)
-        .addField(`${prefix}report [ник] [причина] `, `Кинуть жалобу на **пользователя**`)
-        .addField(`${prefix}lvl или ${prefix}xp или ${prefix}exp или ${prefix}level`, `Посмотреть уровень и колчичество очков`)
+        .addField(`${prefix}report [@ник] [причина] `, `Кинуть жалобу на **пользователя**`)
+        .addField(`${prefix}lvl / ${prefix}xp / ${prefix}exp / ${prefix}level`, `Посмотреть уровень и колчичество очков`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
@@ -1900,15 +1940,17 @@ bot.on("message", (message) => {
         .setDescription("Список команд для админов: ")
         .setColor(embedColor)
         .setThumbnail(bIcon)
-        .addField(`${prefix}kick [ник] [причина]`, `Выгнать **пользователя** с **сервера**`)
+        .addField(`${prefix}kick [@ник] [причина]`, `Выгнать **пользователя** с **сервера**`)
         .addField(`${prefix}clear [количество] `, `Очистить канал от [количества] сообщений`)
-        .addField(`${prefix}mute [ник] [время] [причина] `, `Заткнуть **пользователя**`)
-        .addField(`${prefix}unmute [ник] `, `Размутить **пользователя**`)
-        .addField(`${prefix}ban [ник] [время] [причина] `, `Забанить **пользователя** на сервере`)
-        .addField(`${prefix}unban [ник] `, `Разбанить **пользователя** на сервере`)
-        .addField(`${prefix}giverole [ник] [роль] `, `Выдать **пользователю** права для админ [команды]`)
-        .addField(`${prefix}giveroles [ник] `, `Выдать **пользователю** права для команд clear и mute`)
-        .addField(`${prefix}removeroles [ник] `, `Отобрать права у **пользователя** на все админ команды`)
+        .addField(`${prefix}mute [@ник] [время] [причина] `, `Заткнуть **пользователя**`)
+        .addField(`${prefix}unmute [@ник] `, `Размутить **пользователя**`)
+        .addField(`${prefix}ban [@ник] [время] [причина] `, `Забанить **пользователя** на сервере`)
+        .addField(`${prefix}unban [@ник] `, `Разбанить **пользователя** на сервере`)
+        .addField(`${prefix}giverole [@ник] [роль] `, `Выдать **пользователю** права для админ [команды]`)
+        .addField(`${prefix}giveroles [@ник] `, `Выдать **пользователю** права для команд clear и mute`)
+        .addField(`${prefix}removeroles [@ник] `, `Отобрать права у **пользователя** на все админ команды`)
+        .addField(`${prefix}addxp [@ник] `, `Добавить **пользователю** 1000 очков опыта`)
+        .addField(`${prefix}warn [@ник] [причина]`, `Предупредить **пользователя**`)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
       message.delete().catch(O_o => { });
@@ -1921,7 +1963,7 @@ bot.on("message", (message) => {
 
       let botEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Информация о боте: ")
+        .setDescription(":small_orange_diamond: Информация о боте: ")
         .setColor(embedColor)
         .setThumbnail(bIcon)
         .addField("Название бота", bot.user.username, true)
@@ -1937,7 +1979,7 @@ bot.on("message", (message) => {
       let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
       let rSpellingEmbed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription(`Правописание ${prefix}report`)
+        .setDescription(`:small_orange_diamond: Правописание ${prefix}report`)
         .addField("Правописание команды", `${prefix}report [ник] [причина]`)
         .setColor(embedColor)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -1946,7 +1988,7 @@ bot.on("message", (message) => {
       if (!rUser) {
         let userNotFoundEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("Пользователь не найден")
+          .setDescription(":x: Пользователь не найден")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1958,7 +2000,7 @@ bot.on("message", (message) => {
       if (rUser.id == sender.id) {
         let rCantReportUrSelf = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("Нельзя кинуть жалобу на себя")
+          .setDescription(":x: Нельзя кинуть жалобу на себя")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1970,7 +2012,7 @@ bot.on("message", (message) => {
       if (!rReason) {
         let rNoReasonEmbed = new Discord.RichEmbed()
           .setAuthor(name = bot.user.username, icon_url = bIcon)
-          .setDescription("<@" + sender.id + ">, вы не указали причину")
+          .setDescription(":x: <@" + sender.id + ">, вы не указали причину")
           .setColor(embedColor)
           .setFooter("Бот версии " + version, sender.displayAvatarURL)
 
@@ -1984,10 +2026,10 @@ bot.on("message", (message) => {
       let reportEmbed = new Discord.RichEmbed()
         .setThumbnail(rUser.displayAvatarURL)
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Жалоба на пользователя")
+        .setDescription(":small_orange_diamond: Жалоба на пользователя")
         .setColor(embedColor)
         .addField("Ник", rUser, true)
-        .addField("Тэг ", + rUser.tag, true)
+        .addField("Тег ", + rUser.tag, true)
         .addField("ID ", + rUser.id, true)
         .addField("Пожаловался ", sender, true)
         .addField("Время ", serverCreatedAt, true)
@@ -2000,7 +2042,7 @@ bot.on("message", (message) => {
         .setDescription(":white_check_mark: Жалоба на пользователя отправлена")
         .setColor(embedColor)
         .addField("Ник ", rUser, true)
-        .addField("Тэг ", rUser.user.tag, true)
+        .addField("Тег ", rUser.user.tag, true)
         .addField("ID ", rUser.id, true)
         .addField("Причина", rReason, true)
         .setFooter("Бот версии " + version, sender.displayAvatarURL)
@@ -2008,7 +2050,7 @@ bot.on("message", (message) => {
       let reportsChannel = message.guild.channels.find('name', "rb-reports");
 
       if (!reportsChannel)
-        return message.channel.send("Не удалось найти текстовый канал для репортов")
+        return message.channel.send(":x: Не удалось найти текстовый канал для репортов")
 
       message.delete().catch(O_o => { });
 
@@ -2028,7 +2070,7 @@ bot.on("message", (message) => {
       let sicon = message.guild.iconURL;
       let serverembed = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
-        .setDescription("Информация о сервере: ")
+        .setDescription(":small_orange_diamond: Информация о сервере: ")
         .setColor(embedColor)
         .setThumbnail(sicon)
         .addField("Название сервера ", message.guild.name, true)
