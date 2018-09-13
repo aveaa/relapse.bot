@@ -1154,9 +1154,6 @@ bot.on("message", (message) => {
     message.delete().catch(O_o => { });
 
     async function functionMuteTwo() {
-      if(!toMute.roles.find('name', 'Muted')) {
-        return;
-      }
       await (toMute.addRole(muterole.id));
       message.channel.send(muteChannelLog);
       logChannel.send(muteModLog);
@@ -1165,6 +1162,9 @@ bot.on("message", (message) => {
     functionMuteTwo();
 
     setTimeout(function () {
+      if(!toMute.roles.find('name', 'Muted')) {
+        return;
+      }
       toMute.removeRole(muterole.id);
       let muteMuted = new Discord.RichEmbed()
         .setAuthor(name = bot.user.username, icon_url = bIcon)
