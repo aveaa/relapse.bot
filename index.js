@@ -153,7 +153,7 @@ bot.on("guildMemberAdd", member => {
   let welcomeEmbed = new Discord.RichEmbed()
     .setAuthor(bot.user.username, bot.user.displayAvatarURL)
     .setThumbnail(member.user.displayAvatarURL)
-    .setDescription(`:small_orange_diamond: Привет, <@${member.username}>! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
+    .setDescription(`:small_orange_diamond: Привет, ${member.user.username}! Ты попал на сервер RusTNT Official! Садись на кресло, устраивайся по удобнее, и слушай!`)
     .setColor(botconfig.embedColor)
     .addField("Пользователей на сервере ", member.guild.memberCount, true)
 
